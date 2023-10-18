@@ -4,14 +4,27 @@ import { StyleSheet, Text, View, TextInput, Button } from "react-native";
 import { AsyncStorage } from "@react-native-async-storage/async-storage";
 import { Ionicons, Material, CommunityIcons } from "@expo/vector-icons";
 import init from "react_native_mqtt";
-import {MqttClient} from '../MqttClient';
-
-const topicsub = "test";
-const topic = "test";
 
 
+
+init({
+  size: 10000,
+  storageBackend: AsyncStorage,
+  defaultExpires: 1000 * 3600 * 24,
+  enableCache: true,
+  sync : {}
+});
+const options = {
+  host: '192.168.134.225',
+  port: 9001,
+  path: '/',
+  id: 'id_' + parseInt(Math.random()*100000)
+};
+
+client = new Paho.MQTT.Client(options.host, options.port, options.path);
 
 export default function HomeScreen() {
+  const [status, setStatus] = useState("");
   const [message, setMessage] = useState("");
   const [publishPayload, setPublishPayload] = useState("");
   const [publishTopic, setPublishTopic] = useState("");
@@ -19,40 +32,68 @@ export default function HomeScreen() {
   const [isSubscribed, setSubscribed] = useState(false);
   const [mqttConnected, setMqttConnected] = useState(false);
 
-  useEffect(() => {
-    MqttClient.onConnect(onSuccess, onConnectionLost);
-  }, []);
+  
 
   const onSuccess = () => {
     console.info("Mqtt Connected");
+    setStatus("Connected");
     setMqttConnected(true);
   };
 
   const onConnectionLost = () => {
     setMqttConnected(false);
-    console.info("Mqtt Fail to connect");
+    setStatus("notConnected");
+    console.info("Mqtt Failed to connect");
   };
 
-  const onSubscribe = (message) => {
-    setMessage(message);
-  };
 
   function onSubscribeHandler() {
-    MqttClient.onSubscribe(subscribeTopic, onSubscribe);
+    client.subscribe(subscribeTopic);
     setSubscribed(true);
   }
 
   function onPublishHandler() {
-    MqttClient.onPublish(publishTopic, publishPayload);
     setPublishPayload("");
+    var message = new Paho.MQTT.Message(options.id + ':' + publishPayload);
+    message.destinationName = publishTopic;
+    client.send(message);
   }
 
   function unSubscribeHandler() {
-    MqttClient.unsubscribe(subscribeTopic);
+    client.unsubscribe(subscribeTopic);
     setSubscribeTopic("");
     setSubscribed(false);
   }
 
+  function connect(){
+      setStatus("isFetching");
+      client.connect({
+          onSuccess: onSuccess,
+          useSSL: false,
+          timeout: 3,
+          onFailure: onConnectionLost
+        });
+  }
+  function disconnect(){
+    setMqttConnected(false);
+    setStatus("notConnected");
+    console.info("Mqtt disconnected");
+    client.disconnect();
+}
+  useEffect(() => {
+    //connect();
+    client.onConnectionLost = onConnectionLost;
+    client.onMessageArrived = onMessageArrived;
+  }, []);
+  onMessageArrived = (message)=> {
+    console.log('onMessageArrived:' + message.payloadString);
+  }
+  connectDisconnectHandler = ()=>{
+    console.log(mqttConnected);
+    if(mqttConnected) disconnect();
+    else connect();
+    
+  }
   return (
     <View style={styles.container}>
       <View style={styles.statusContainer}>
@@ -65,6 +106,26 @@ export default function HomeScreen() {
           {mqttConnected ? "MQTT connected" : "Not connected"}
         </Text>
       </View>
+      <View className="flex-1 justify-center items-center bg-zinc-300 p-0 m-0 max-h-20">
+        <Text
+        className="p-0 m-0 h-fit"
+          style={{
+            color: "#000",
+            fontWeight: "600",
+          }}
+        >
+          host: {options.host+"\n"}
+          port: {options.port+"\n"}
+          id: {options.id}
+        </Text>
+      </View>
+      <Button
+              type="solid"
+              title={status=="isFetching" ? "connecting" : (!mqttConnected ? "connect" : "disconnect")}
+              onPress={connectDisconnectHandler}
+              color={mqttConnected ? "red" : "#42b883"}
+              disabled={status=="isFetching"}
+            />
       <View style={styles.mainContainer}>
         {!isSubscribed ? (
           <View style={styles.subscribeContainer}>
