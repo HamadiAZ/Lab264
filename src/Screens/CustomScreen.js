@@ -15,7 +15,7 @@ init({
   sync : {}
 });
 const options = {
-  host: '192.168.134.225',
+  host: '192.168.1.111',
   port: 9001,
   path: '/',
   id: 'id_' + parseInt(Math.random()*100000)
@@ -23,7 +23,7 @@ const options = {
 
 client = new Paho.MQTT.Client(options.host, options.port, options.path);
 
-export default function HomeScreen() {
+export default function CustomScreen() {
   const [status, setStatus] = useState("");
   const [message, setMessage] = useState("");
   const [publishPayload, setPublishPayload] = useState("");
