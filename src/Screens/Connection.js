@@ -5,25 +5,15 @@ import { AsyncStorage } from "@react-native-async-storage/async-storage";
 import { Ionicons, Material, CommunityIcons } from "@expo/vector-icons";
 import init from "react_native_mqtt";
 
-
-
 init({
   size: 10000,
   storageBackend: AsyncStorage,
   defaultExpires: 1000 * 3600 * 24,
   enableCache: true,
-  sync : {}
+  sync: {},
 });
-const options = {
-  host: '192.168.1.111',
-  port: 9001,
-  path: '/',
-  id: 'id_' + parseInt(Math.random()*100000)
-};
-
-client = new Paho.MQTT.Client(options.host, options.port, options.path);
-
-export default function CustomScreen() {
+client = new Paho.MQTT.Client("", 1, "");
+export default function Connection() {
   const [status, setStatus] = useState("");
   const [message, setMessage] = useState("");
   const [publishPayload, setPublishPayload] = useState("");
@@ -32,8 +22,11 @@ export default function CustomScreen() {
   const [isSubscribed, setSubscribed] = useState(false);
   const [mqttConnected, setMqttConnected] = useState(false);
 
+  const [host, setHost] = useState("192.168.0.209");
+  const [port, setPort] = useState(9001);
+  const [id, setId] = useState("id_" + parseInt(Math.random() * 100000));
+  const [path, setPath] = useState("ENIG/Lab264/");
   
-
   const onSuccess = () => {
     console.info("Mqtt Connected");
     setStatus("Connected");
@@ -46,56 +39,63 @@ export default function CustomScreen() {
     console.info("Mqtt Failed to connect");
   };
 
-
   function onSubscribeHandler() {
+    if(disconnectIfNotConnected()) return;
     client.subscribe(subscribeTopic);
     setSubscribed(true);
   }
 
   function onPublishHandler() {
+    if(disconnectIfNotConnected()) return;
     setPublishPayload("");
-    var message = new Paho.MQTT.Message(options.id + ':' + publishPayload);
+    var message = new Paho.MQTT.Message(id + ":" + publishPayload);
     message.destinationName = publishTopic;
     client.send(message);
   }
 
   function unSubscribeHandler() {
+    if(disconnectIfNotConnected()) return;
     client.unsubscribe(subscribeTopic);
     setSubscribeTopic("");
     setSubscribed(false);
   }
 
-  function connect(){
-      setStatus("isFetching");
-      client.connect({
-          onSuccess: onSuccess,
-          useSSL: false,
-          timeout: 3,
-          onFailure: onConnectionLost
-        });
+  function connect() {
+    client = new Paho.MQTT.Client(host, port, path);
+    setStatus("isFetching");
+    client.connect({
+      onSuccess: onSuccess,
+      useSSL: false,
+      timeout: 3,
+      onFailure: onConnectionLost,
+    });
   }
-  function disconnect(){
+  function disconnectIfNotConnected(){
+    if(client.isConnected()) return false;
+    disconnect();
+    return true;
+  }
+  function disconnect() {
     setMqttConnected(false);
     setStatus("notConnected");
     console.info("Mqtt disconnected");
-    client.disconnect();
-}
+    if(client.isConnected()) client.disconnect();
+  }
   useEffect(() => {
-    //connect();
     client.onConnectionLost = onConnectionLost;
     client.onMessageArrived = onMessageArrived;
-  }, []);
-  onMessageArrived = (message)=> {
-    console.log('onMessageArrived:' + message.payloadString);
-  }
-  connectDisconnectHandler = ()=>{
+  }, [client.isConnected()]);
+  onMessageArrived = (message) => {
+    console.log("onMessageArrived:" + message.payloadString);
+  };
+  connectDisconnectHandler = () => {
     console.log(mqttConnected);
-    if(mqttConnected) disconnect();
+    if (mqttConnected) disconnect();
     else connect();
-    
-  }
+  };
+
   return (
-    <View style={styles.container}>
+    <View className="flex-1">
       <View style={styles.statusContainer}>
         <Text
           style={{
@@ -106,26 +106,57 @@ export default function CustomScreen() {
           {mqttConnected ? "MQTT connected" : "Not connected"}
         </Text>
       </View>
-      <View className="flex-1 justify-center items-center bg-zinc-300 p-0 m-0 max-h-20">
-        <Text
-        className="p-0 m-0 h-fit"
-          style={{
-            color: "#000",
-            fontWeight: "600",
-          }}
-        >
-          host: {options.host+"\n"}
-          port: {options.port+"\n"}
-          id: {options.id}
-        </Text>
+      <View className="justify-center items-center max-h-40">
+        <View className="flex flex-row gap-2 items-center justify-center">
+          <Text className="pl-9">Host :</Text>
+          <TextInput
+            value={host}
+            autoCapitalize={"none"}
+            onChangeText={setHost}
+          />
+        </View>
+        <View className="flex flex-row gap-2 items-center justify-center">
+          <Text>Port :</Text>
+
+          <TextInput
+            className="pr-2"
+            value={port.toString()}
+            autoCapitalize={"none"}
+            onChangeText={setPort}
+          />
+        </View>
+        <View className="flex flex-row gap-2 items-center justify-center">
+          <Text>Client Id :</Text>
+          <TextInput
+            className="pr-2"
+            value={id}
+            autoCapitalize={"none"}
+            onChangeText={setId}
+          />
+        </View>
+        <View className="flex flex-row gap-2 items-center justify-center">
+          <Text className="pl-9">Path :</Text>
+          <TextInput
+            placeholder={"enter Path"}
+            value={path}
+            autoCapitalize={"none"}
+            onChangeText={setPath}
+          />
+        </View>
       </View>
       <Button
-              type="solid"
-              title={status=="isFetching" ? "connecting" : (!mqttConnected ? "connect" : "disconnect")}
-              onPress={connectDisconnectHandler}
-              color={mqttConnected ? "red" : "#42b883"}
-              disabled={status=="isFetching"}
-            />
+        type="solid"
+        title={
+          status == "isFetching"
+            ? "connecting"
+            : !mqttConnected
+            ? "connect"
+            : "disconnect"
+        }
+        onPress={connectDisconnectHandler}
+        color={mqttConnected ? "red" : "#42b883"}
+        disabled={status == "isFetching"}
+      />
       <View style={styles.mainContainer}>
         {!isSubscribed ? (
           <View style={styles.subscribeContainer}>
