@@ -135,7 +135,7 @@ export default function Connection() {
           />
         </View>
         <View className="flex flex-row gap-2 items-center justify-center">
-          <Text className="pl-9">Path :</Text>
+          <Text className="">Path :</Text>
           <TextInput
             placeholder={"enter Path"}
             value={path}
