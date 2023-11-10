@@ -4,7 +4,9 @@ const Lab01Data = [
     name: "Button 1",
     separator: "/",
     path: "Button01",
+    cumulativePath:"",
     category: "ButtonX",
+    state:false,
     Params: {
       onMessage: "On",
       offMessage: "Off",
@@ -15,7 +17,9 @@ const Lab01Data = [
     name: "Button 2",
     separator: "/",
     path: "Button02",
+    cumulativePath:"",
     category: "ButtonY",
+    state:false,
     Params: {
       onMessage: "On",
       offMessage: "Off",
@@ -26,9 +30,10 @@ const Lab01Data = [
     name: "Slider 1",
     separator: "/",
     path: "Slider01",
+    cumulativePath:"",
     category: "ButtonY",
+    state:10,
     Params: {
-      value: 10,
       minValue: 1,
       maxValue: 200,
     },
@@ -40,6 +45,7 @@ const Lab260Data = [
     name: "Lab01",
     separator: "/",
     path: "Lab01",
+    cumulativePath:"",
     Data: Lab01Data,
   },
   {
@@ -47,6 +53,7 @@ const Lab260Data = [
     name: "Lab02",
     separator: "/",
     path: "Lab02",
+    cumulativePath:"",
     Data: [],
   },
 ];
@@ -56,6 +63,7 @@ const EnigData = [
     name: "Lab260",
     separator: "/",
     path: "Lab260",
+    cumulativePath:"",
     Data: Lab260Data,
   },
   {
@@ -63,25 +71,27 @@ const EnigData = [
     name: "Lab256",
     separator: "/",
     path: "Lab256",
+    cumulativePath:"",
     Data: [],
   },
 ];
 export const test = {
   type: "container",
   path: "",
+  cumulativePath:"",
   separator: "",
   Data: [
     {
       type: "container",
       name: "Enig",
-      separator: "/",
+      separator: "",
       path: "ENIG",
       Data: EnigData,
     },
   ],
 };
 export function getCategories(obj){
-    var newObj={...test};
+    var newObj={...obj};
     return _getCategories(newObj);
 }
  function _getCategories(obj, categories = {},path="") {
@@ -120,3 +130,5 @@ export function getCategories(obj){
     }
     return Types;
   }
+
+  

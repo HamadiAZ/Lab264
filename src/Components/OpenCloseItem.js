@@ -3,17 +3,23 @@
 import { View, Text, TouchableOpacity,Animated } from "react-native";
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 
+import { useSelector, useDispatch } from 'react-redux'
+import { buttonSwitch } from '../Store/dataSlice'
+import { getDeviceFromState } from "../Store/dataSliceFunctions";
+
 function OpenCloseItem({ name, path ,Data,navigation}) {
   
-  function onPressSettings(){
-    console.log(isOn ? "Open ": "Close");
-  }
+  const dispatch = useDispatch()
 
-  const [isOn, setIsOn] = useState(false)
 
+  //const [isOn, setIsOn] = useState(false)
+  isOn=getDeviceFromState(path); 
+  console.log(getDeviceFromState(path));
+  console.log(path);
   function toggleHandle() {
     console.log(!isOn ? "Open ": "Close");
-    setIsOn(!isOn);
+    dispatch(buttonSwitch({newState:!isOn,path}));
+    //setIsOn(!isOn);
   }
 
   return (
