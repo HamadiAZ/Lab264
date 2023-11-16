@@ -1,28 +1,29 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { test } from '../data'
-import { setStateOfDevice } from './dataSliceFunctions';
+import { setStateOfDevice,updateCumulativePath } from './dataSliceFunctions';
 const initialState = test;
 
-export const counterSlice = createSlice({
+export const DataSlice = createSlice({
   name: 'data',
   initialState,
   reducers: {
 
-    buttonSwitch: (state, action) => {
+    updateDeviceState: (state, action) => {
       //let newState=action.payload;
-      console.log(action.payload);
-      let {newState,path}=action.payload;
-      setStateOfDevice(state,path,newState);
+      let newState=action.payload;
+      console.log(newState)
+      setStateOfDevice(state,newState.cumulativePath,newState);
     },
 
-    increment: (state) => {
-      state.value += 1
+    updateCumulativePaths:(state)=>{
+      updateCumulativePath(state);
     },
+
     
   },
 })
 
 // Action creators are generated for each case reducer function
-export const { increment, buttonSwitch } = counterSlice.actions
+export const { updateDeviceState,updateCumulativePaths } = DataSlice.actions
 
-export default counterSlice.reducer
+export default DataSlice.reducer

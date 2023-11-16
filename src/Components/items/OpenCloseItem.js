@@ -4,22 +4,20 @@ import { View, Text, TouchableOpacity,Animated } from "react-native";
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 
 import { useSelector, useDispatch } from 'react-redux'
-import { buttonSwitch } from '../Store/dataSlice'
-import { getDeviceFromState } from "../Store/dataSliceFunctions";
+import { updateDeviceState } from '../../Store/dataSlice'
+import { getDeviceFromState } from "../../Store/dataSliceFunctions";
 
 function OpenCloseItem({ name, path ,Data,navigation}) {
   
   const dispatch = useDispatch()
 
-
   //const [isOn, setIsOn] = useState(false)
-  isOn=getDeviceFromState(path); 
-  console.log(getDeviceFromState(path));
-  console.log(path);
+  const deviceState=getDeviceFromState(Data.cumulativePath); 
   function toggleHandle() {
-    console.log(!isOn ? "Open ": "Close");
-    dispatch(buttonSwitch({newState:!isOn,path}));
-    //setIsOn(!isOn);
+    let stateCopy={...deviceState};
+    stateCopy.state=!stateCopy.state;
+    
+    dispatch(updateDeviceState(stateCopy));
   }
 
   return (
@@ -36,7 +34,7 @@ function OpenCloseItem({ name, path ,Data,navigation}) {
             height: 32,
             borderRadius: 32,
             padding: 4,
-            backgroundColor: isOn
+            backgroundColor: deviceState.state
               ? "limegreen"
               : "gray",
           }}
@@ -48,7 +46,7 @@ function OpenCloseItem({ name, path ,Data,navigation}) {
             borderRadius: 32,
             backgroundColor:"white",
             transform: [{
-              translateX: isOn ? 32 : 0,
+              translateX: deviceState.state ? 32 : 0,
             }]
           }} />
         </TouchableOpacity>

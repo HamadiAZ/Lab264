@@ -1,18 +1,17 @@
 import React, { useEffect } from "react";
 import Card from "../Components/Card";
 import { View, Text, TouchableOpacity } from "react-native";
-import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 
-import { test, getTypes } from "../data";
-import OpenCloseItem from "../Components/OpenCloseItem";
+import { useSelector, useDispatch } from 'react-redux'
+import { getTypes } from "../Store/dataSliceFunctions";
+
 
 function ListTypes({ route }) {
-  // const Data=route.params.Data;
-
   const navigation = useNavigation();
-  let categories = getTypes(test);
-  var list = Object.keys(categories);
+  const data = useSelector((state) => state.data);
+  const types=getTypes(data);
+  var list = Object.keys(types);
   useEffect(() => {
     navigation.setOptions({
       title: "Types", // Set the new title for the navigation bar
@@ -26,10 +25,8 @@ function ListTypes({ route }) {
           <Card
             key={index}
             name={typeName}
-            path={categories[typeName][0].path}
-            Data={categories[typeName]}
+            Data={types[typeName]}
             separator=""
-            navigation={navigation}
             showSetting={false}
             showPath={false}
           />

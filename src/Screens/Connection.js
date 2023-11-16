@@ -5,6 +5,12 @@ import { AsyncStorage } from "@react-native-async-storage/async-storage";
 import { Ionicons, Material, CommunityIcons } from "@expo/vector-icons";
 import init from "react_native_mqtt";
 
+
+import { useSelector, useDispatch } from 'react-redux'
+import { updateCumulativePaths} from "../Store/dataSlice"
+import { getAllDevices } from "../Store/dataSliceFunctions";
+
+
 init({
   size: 10000,
   storageBackend: AsyncStorage,
@@ -88,10 +94,16 @@ export default function Connection() {
   onMessageArrived = (message) => {
     console.log("onMessageArrived:" + message.payloadString);
   };
+  const data = useSelector((state) => state.data);
+  
+  const dispatch = useDispatch()
   connectDisconnectHandler = () => {
-    console.log(mqttConnected);
+    
+    dispatch(updateCumulativePaths());
+
+    /* console.log(mqttConnected);
     if (mqttConnected) disconnect();
-    else connect();
+    else connect(); */
   };
 
   return (

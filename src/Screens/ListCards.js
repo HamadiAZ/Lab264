@@ -5,13 +5,15 @@ import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 
 import { test } from "./Home";
-import OpenCloseItem from "../Components/OpenCloseItem";
+import OpenCloseItem from "../Components/items/OpenCloseItem";
+import SliderItem from "../Components/items/SliderItem";
+import CustomItem from "../Components/items/CustomItem";
 
 function ListCards({ route }) {
-   const Data=route.params.Data;
-  const path = route.params.path;
+
+
   const name = route.params.name;
-  console.log(name)
+
   const navigation = useNavigation();
   let list = route.params.Data; 
   useEffect(() => {
@@ -22,23 +24,45 @@ function ListCards({ route }) {
   return (
     <View className="flex-1 bg-white">
       {list.map((card, index) => {
+
         if (card.type == "container")
           return (
             <Card
               key={index}
               name={card.name}
-              path={path + card.separator + card.path}
+              path={card.cumulativePath}
               Data={card.Data}
+              separator={card.separator}
+            />
+          );
+          if (card.type == "Slider")
+          return (
+            <SliderItem
+              key={index}
+              name={card.name}
+              path={card.cumulativePath}
+              params={card}
               separator={card.separator}
               navigation={navigation}
             />
           );
-        return (
-          <OpenCloseItem
+          if (card.type == "Button" || card.type == "Switch")
+          return (
+            <OpenCloseItem
             key={index}
             name={card.name}
-            path={path + card.separator + card.path}
-            Data={card.Data}
+            path={card.cumulativePath}
+            Data={card}
+            separator={card.separator}
+            navigation={navigation}
+          />
+          );
+        return (
+          <CustomItem
+            key={index}
+            name={card.name}
+            path={card.cumulativePath}
+            Data={card}
             separator={card.separator}
             navigation={navigation}
           />

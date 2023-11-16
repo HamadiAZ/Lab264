@@ -1,22 +1,25 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 
 function Card({
   name,
   path,
   Data,
-  navigation,
   showPath = true,
   showSetting = true,
 }) {
 
+  const navigation = useNavigation();
   function onPressNavigate() {
-    navigation.navigate("ListCards", { name, path, Data });
+    navigation.navigate("ListCards", { name, Data});
   }
   function onPressSettings() {
     console.log("set ");
   } 
+
+
   return (
     <TouchableOpacity
       className="flex flex-row justify-between bg-gray-100 min-w-max mx-1 rounded-l mt-1"
