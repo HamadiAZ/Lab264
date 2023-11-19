@@ -15,7 +15,7 @@ import { ScrollView } from "react-native-gesture-handler";
 function CustomItem({ name, path, params, navigation }) {
   const [lastMessageSent, setLastMessageSent] = useState("test");
   const [message, setMessage] = useState("");
-  
+  return (<View></View>)
   return ( 
     <SafeAreaView >
       <ScrollView>

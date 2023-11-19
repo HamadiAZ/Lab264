@@ -4,13 +4,14 @@ import { StyleSheet, Text, View, TextInput, Button } from "react-native";
 import { AsyncStorage } from "@react-native-async-storage/async-storage";
 import { Ionicons, Material, CommunityIcons } from "@expo/vector-icons";
 
-
-import { useSelector, useDispatch } from 'react-redux'
-import { updateCumulativePaths} from "../Store/dataSlice"
+import { useSelector, useDispatch } from "react-redux";
+import { updateCumulativePaths, updateDeviceState } from "../Store/dataSlice";
 import { getAllDevices } from "../Store/dataSliceFunctions";
 import { setIsConnected } from "../Store/mqttSlice";
 
 import init from "react_native_mqtt";
+
+import MessagesHandler from "../Components/MessagesHandler";
 
 init({
   size: 10000,
@@ -20,51 +21,52 @@ init({
   sync: {},
 });
 client = new Paho.MQTT.Client("", 1, "");
+console.log("rerendered");
 export default function Connection() {
   const [status, setStatus] = useState("");
-  const [message, setMessage] = useState("");
+
   const [publishPayload, setPublishPayload] = useState("");
   const [publishTopic, setPublishTopic] = useState("");
   const [subscribeTopic, setSubscribeTopic] = useState("");
   const [isSubscribed, setSubscribed] = useState(false);
 
-  const isMqttConnected = useSelector((state) => state.mqtt.isConnected)
+  const isMqttConnected = useSelector((state) => state.mqtt.isConnected);
   const data = useSelector((state) => state.data);
-  const allDevices=getAllDevices(data);
+  const allDevices = getAllDevices(data);
 
-  const dispatch = useDispatch()
-
+  const dispatch = useDispatch();
 
   const [host, setHost] = useState("192.168.0.219");
   const [port, setPort] = useState(9001);
   const [id, setId] = useState("Client_" + parseInt(Math.random() * 100000));
   const [path, setPath] = useState("ENIG/Lab264/");
-  
+
   const onSuccess = () => {
     console.info("Mqtt Connected");
     setStatus("Connected");
     dispatch(setIsConnected(true));
-    allDevices.forEach(device => {
+    allDevices.forEach((device) => {
       client.subscribe(device.cumulativePath);
-      console.log("subscribed to "+device.cumulativePath);
+      console.log("subscribed to " + device.cumulativePath);
     });
   };
 
   const onConnectionLost = () => {
-    console.log("onConnectionLost() "+client.isConnected())
+    console.log("onConnectionLost() ");
+    console.log("onConnectionLost() " + client.isConnected());
     dispatch(setIsConnected(false));
     setStatus("notConnected");
     console.info("Mqtt Failed to connect");
   };
 
   function onSubscribeHandler() {
-    if(disconnectIfNotConnected()) return;
+    if (disconnectIfNotConnected()) return;
     client.subscribe(subscribeTopic);
     setSubscribed(true);
   }
 
   function onPublishHandler() {
-    if(disconnectIfNotConnected()) return;
+    if (disconnectIfNotConnected()) return;
     setPublishPayload("");
     var message = new Paho.MQTT.Message(id + ":" + publishPayload);
     message._setQos(2);
@@ -73,7 +75,7 @@ export default function Connection() {
   }
 
   function unSubscribeHandler() {
-    if(disconnectIfNotConnected()) return;
+    if (disconnectIfNotConnected()) return;
     client.unsubscribe(subscribeTopic);
     setSubscribeTopic("");
     setSubscribed(false);
@@ -89,8 +91,8 @@ export default function Connection() {
       onFailure: onConnectionLost,
     });
   }
-  function disconnectIfNotConnected(){
-    if(client.isConnected()) return false;
+  function disconnectIfNotConnected() {
+    if (client.isConnected()) return false;
     disconnect();
     return true;
   }
@@ -98,60 +100,20 @@ export default function Connection() {
     dispatch(setIsConnected(false));
     setStatus("notConnected");
     console.info("Mqtt disconnected");
-    if(client.isConnected()) client.disconnect();
+    if (client.isConnected()) client.disconnect();
   }
   useEffect(() => {
     client.onConnectionLost = onConnectionLost;
-    client.onMessageArrived = onMessageArrived;
   }, [client.isConnected()]);
-
-  onMessageArrived = (message) => {
-    console.log("onMessageArrived: " + message.payloadString +" || for topic : "+message.topic);
-    allDevices.forEach(deviceOrg => {
-      const device=deviceOrg
-      if(device.cumulativePath==message.topic){
-        if(device.type=="Slider"){
-          if(!isNaN(message.payloadString) && !isNaN(parseFloat(message.payloadString))){
-            console.log("Received: Slider "+device.cumulativePath+" but INVALID VALUE !! : "+message.payloadString);
-          }
-          if(parseFloat(message.payloadString)<device.params.minValue) {
-            console.log("Received: Slider "+device.cumulativePath+" but INVALID VALUE !! : "+message.payloadString +" with is less than the minimum "+device.params.minValue);
-            device.state=device.params.minValue;
-          }else if(parseFloat(message.payloadString)>device.params.maxValue) {
-            console.log("Received: Slider "+device.cumulativePath+" but INVALID VALUE !! : "+message.payloadString +" with is more than the maximum "+device.params.maxValue);
-            device.params.maxValue
-          }else{
-            console.log("Received: Slider "+device.cumulativePath+" set value to : "+message.payloadString);
-            device.state=parseFloat(message.payloadString);
-          }
-        }else if(device.type=="Button"){
-          if(message.payloadString==device.params.onMessage) {
-            console.log("Received: button"+device.cumulativePath+" was turned ON");
-            device.state=true;
-          }else if(message.payloadString==device.params.offMessage) {
-            console.log("Received: button"+device.cumulativePath+" was turned OFF");
-            device.state=false;
-          }else{
-            console.log("Received: button"+device.cumulativePath+" was turned OFF, UNKNOWN MESSAGE TYPE : "+message.payloadString);
-            device.state=false;
-          }
-        }else {
-          device.state=message.payloadString;
-          console.log("Received: customDevice"+device.cumulativePath+" had new state : "+message.payloadString);
-        }
-        dispatch(updateDeviceState(device));
-      } 
-    });
-    console.log("no device found for topic : "+message.topic );
-  };
 
   connectDisconnectHandler = () => {
     if (isMqttConnected) disconnect();
-    else connect(); 
+    else connect();
   };
 
   return (
     <View className="flex-1">
+      <MessagesHandler client={client} />
       <View style={styles.statusContainer}>
         <Text
           style={{
@@ -273,9 +235,6 @@ export default function Connection() {
           color="#42b883"
           disabled={!(publishTopic && publishPayload)}
         />
-      </View>
-      <View style={styles.messageContainer}>
-        <Text>{message}</Text>
       </View>
     </View>
   );

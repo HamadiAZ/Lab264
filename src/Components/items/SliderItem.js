@@ -1,28 +1,44 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, Animated } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { useSelector, useDispatch } from "react-redux";
-import { buttonSwitch } from "../../Store/dataSlice";
+import { buttonSwitch, updateDeviceState } from "../../Store/dataSlice";
 import { getDeviceFromState } from "../../Store/dataSliceFunctions";
 
 import { useSharedValue } from "react-native-reanimated";
 import { Slider } from "react-native-awesome-slider";
 
-function SliderItem({ name, path, params, navigation }) {
-  const { maxValue, minValue } = params;
-  const [value, setValue] = useState(minValue);
-
-  const progress = useSharedValue(30);
-  const min = useSharedValue(0);
-  const max = useSharedValue(100);
+function SliderItem({ name, path, Data, navigation }) {
+  const dispatch = useDispatch()
+  const deviceState=getDeviceFromState(Data.cumulativePath); 
+  
+  const { maxValue, minValue } = deviceState.params;
+  const [value, setValue] = useState(deviceState.state);
+  
+  const min = useSharedValue(minValue);
+  const max = useSharedValue(maxValue);
   const addedUnit="Bar";
   const numberAfterComma=0;
+
+  const sliderValue = useSharedValue(value);
+  
   function updateValue(newValue){
     const tenPower=10^numberAfterComma;
     const roundedValue=(Math.round(newValue * tenPower)/tenPower).toFixed(numberAfterComma);
     setValue(roundedValue)
+    return roundedValue;
   }
+  function onSlidingComplete(){
+    deviceState.state=value;
+    updateDeviceState(deviceState);
+  }
+useEffect(() => {
+  sliderValue.value = deviceState.state;
+  updateValue(deviceState.state)
+}, [deviceState.state])
+
+
   return (
     <View className="bg-gray-100 min-w-max mx-1 rounded-l mt-1 ">
       <TouchableOpacity className="flex flex-row justify-between">
@@ -39,12 +55,11 @@ function SliderItem({ name, path, params, navigation }) {
       </TouchableOpacity>
       <View className="px-4 pb-3 h-7">
         <Slider
-          progress={progress}
+          progress={sliderValue}
           minimumValue={min}
           maximumValue={max}
           onValueChange={updateValue}
-          onSlidingComplete={(x)=>console.log(x) //i will do change green color when sent
-          }
+          onSlidingComplete={onSlidingComplete}
           theme={SliderTheme}
           disableTapEvent={true}
           

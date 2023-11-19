@@ -36,12 +36,13 @@ function ListCards({ route }) {
             />
           );
           if (card.type == "Slider")
-          return (
+          return ( 
+        
             <SliderItem
               key={index}
               name={card.name}
               path={card.cumulativePath}
-              params={card}
+              Data={card}
               separator={card.separator}
               navigation={navigation}
             />
