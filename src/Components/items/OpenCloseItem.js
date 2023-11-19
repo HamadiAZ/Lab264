@@ -7,7 +7,7 @@ import { updateDeviceState } from "../../Store/dataSlice";
 import { getDeviceFromState } from "../../Store/dataSliceFunctions";
 import { publishMessage } from "../../Screens/Connection";
 
-function OpenCloseItem({ name, path, Data, navigation }) {
+function OpenCloseItem({ name, path, Data }) {
   const dispatch = useDispatch();
   const deviceState = getDeviceFromState(Data.cumulativePath);
   const isMqttConnected = useSelector((state) => state.mqtt.isConnected);

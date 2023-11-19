@@ -10,6 +10,7 @@ import SliderItem from "../Components/items/SliderItem";
 import CustomItem from "../Components/items/CustomItem";
 import { useSelector } from "react-redux";
 import ConnectionStatusBar from "../Components/ConnectionStatusBar";
+import { ScrollView } from "react-native-gesture-handler";
 
 function ListCards({ route }) {
 
@@ -25,7 +26,7 @@ function ListCards({ route }) {
   }, );
   
   return (
-    <View className="flex-1 bg-white">
+    <ScrollView className="bg-white">
       <ConnectionStatusBar />
       {list.map((card, index) => {
 
@@ -47,8 +48,6 @@ function ListCards({ route }) {
               name={card.name}
               path={card.cumulativePath}
               Data={card}
-              separator={card.separator}
-              navigation={navigation}
             />
           );
           if (card.type == "Button" || card.type == "Switch")
@@ -58,8 +57,6 @@ function ListCards({ route }) {
             name={card.name}
             path={card.cumulativePath}
             Data={card}
-            separator={card.separator}
-            navigation={navigation}
           />
           );
         return (
@@ -68,12 +65,10 @@ function ListCards({ route }) {
             name={card.name}
             path={card.cumulativePath}
             Data={card}
-            separator={card.separator}
-            navigation={navigation}
           />
         );
       })}
-    </View>
+    </ScrollView>
   );
 }
 

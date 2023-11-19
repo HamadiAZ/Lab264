@@ -19,8 +19,16 @@ function SliderItem({ name, path, Data, navigation }) {
   
   const min = useSharedValue(minValue);
   const max = useSharedValue(maxValue);
+
+  let numberAfterComma=0;
+  if(maxValue-minValue>50) numberAfterComma=0;
+  else if(maxValue-minValue>10)numberAfterComma=1;
+  else if(maxValue-minValue>1)numberAfterComma=2;
+  else if(maxValue-minValue>0.1)numberAfterComma=3;
+  else if(maxValue-minValue>0.01)numberAfterComma=4;
+  else numberAfterComma=5;
+
   const addedUnit="Bar";
-  const numberAfterComma=0;
 
   const sliderValue = useSharedValue(value);
   const isMqttConnected = useSelector((state) => state.mqtt.isConnected);

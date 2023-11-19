@@ -24,7 +24,7 @@ let client= new Paho.MQTT.Client("", 1, "");
 
 export function publishMessage(publishPayload,publishTopic) {
   if (!client.isConnected()) return;
-  var message = new Paho.MQTT.Message(publishPayload);
+  var message = new Paho.MQTT.Message(publishPayload.toString());
   message._setQos(2);
   message.destinationName = publishTopic;
   client.send(message);
