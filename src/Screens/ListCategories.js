@@ -7,6 +7,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useSelector, useDispatch } from 'react-redux'
 import { updateCumulativePaths} from "../Store/dataSlice"
 import { getAllDevices,getCategories } from "../Store/dataSliceFunctions";
+import ConnectionStatusBar from "../Components/ConnectionStatusBar";
 
 
 function ListCategories() {
@@ -21,9 +22,10 @@ function ListCategories() {
       title: "Categories", // Set the new title for the navigation bar
     });
   }, []);
-  
+ 
   return (
     <View className="flex-1 bg-white">
+      <ConnectionStatusBar />
       {list.map((categoryName, index) => {
         return (
           <Card

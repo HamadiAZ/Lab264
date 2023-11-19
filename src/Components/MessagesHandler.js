@@ -18,6 +18,7 @@ function MessagesHandler({ client }) {
         " || for topic : " +
         message.topic
     );
+    let deviceFound=false;
     allDevices.forEach((deviceOrg) => {
       const device = { ...deviceOrg };
       if (device.cumulativePath == message.topic) {
@@ -94,18 +95,18 @@ function MessagesHandler({ client }) {
               message.payloadString
           );
         }
+        deviceFound=true;
         dispatch(updateDeviceState(device));
         return;
       }
     });
-    console.log("no device found for topic : " + message.topic);
+    !deviceFound && console.log("no device found for topic : " + message.topic);
   };
   useEffect(() => {
     client.onMessageArrived = onMessageArrived;
   }, [client.isConnected()]);
   return (
     <View>
-      <Text>haha</Text>
     </View>
   );
 }

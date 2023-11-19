@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, Animated } from "react-native";
+import { View, Text, TouchableOpacity, Animated,Alert } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { useSelector, useDispatch } from "react-redux";
@@ -8,6 +8,7 @@ import { getDeviceFromState } from "../../Store/dataSliceFunctions";
 
 import { useSharedValue } from "react-native-reanimated";
 import { Slider } from "react-native-awesome-slider";
+import { publishMessage } from "../../Screens/Connection";
 
 function SliderItem({ name, path, Data, navigation }) {
   const dispatch = useDispatch()
@@ -22,17 +23,30 @@ function SliderItem({ name, path, Data, navigation }) {
   const numberAfterComma=0;
 
   const sliderValue = useSharedValue(value);
-  
+  const isMqttConnected = useSelector((state) => state.mqtt.isConnected);
+
+   
   function updateValue(newValue){
+    if (!isMqttConnected) {
+      return;
+    }
     const tenPower=10^numberAfterComma;
     const roundedValue=(Math.round(newValue * tenPower)/tenPower).toFixed(numberAfterComma);
     setValue(roundedValue)
     return roundedValue;
   }
-  function onSlidingComplete(){
-    deviceState.state=value;
-    updateDeviceState(deviceState);
+
+  function onSlidingComplete(newValue){
+    if (!isMqttConnected) {
+      Alert.alert("Cant change slider value", "Please connect to your broker first!");
+      return;
+    }
+    const x=updateValue(newValue);
+    deviceState.state=x;
+    dispatch(updateDeviceState(deviceState));
+    publishMessage(x,Data.cumulativePath);
   }
+
 useEffect(() => {
   sliderValue.value = deviceState.state;
   updateValue(deviceState.state)
@@ -44,7 +58,7 @@ useEffect(() => {
       <TouchableOpacity className="flex flex-row justify-between">
         <View className="flex align-baseline justify-evenly h-20 w-auto rounded-sm p-3 ">
           <Text className="text-black text-xl">{name}</Text>
-          <Text className="text-gray-500">{path}/</Text>
+          <Text className="text-gray-500">{path}</Text>
         </View>
         <View
           className="flex  align-baseline justify-center bg-gray-100 h-14 rounded-sm mr-5 "

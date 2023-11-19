@@ -8,6 +8,8 @@ import { test } from "./Home";
 import OpenCloseItem from "../Components/items/OpenCloseItem";
 import SliderItem from "../Components/items/SliderItem";
 import CustomItem from "../Components/items/CustomItem";
+import { useSelector } from "react-redux";
+import ConnectionStatusBar from "../Components/ConnectionStatusBar";
 
 function ListCards({ route }) {
 
@@ -21,8 +23,10 @@ function ListCards({ route }) {
       title: name, // Set the new title for the navigation bar
     });
   }, );
+  
   return (
     <View className="flex-1 bg-white">
+      <ConnectionStatusBar />
       {list.map((card, index) => {
 
         if (card.type == "container")

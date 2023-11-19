@@ -20,7 +20,16 @@ init({
   enableCache: true,
   sync: {},
 });
-client = new Paho.MQTT.Client("", 1, "");
+let client= new Paho.MQTT.Client("", 1, "");
+
+export function publishMessage(publishPayload,publishTopic) {
+  if (!client.isConnected()) return;
+  var message = new Paho.MQTT.Message(publishPayload);
+  message._setQos(2);
+  message.destinationName = publishTopic;
+  client.send(message);
+}
+
 console.log("rerendered");
 export default function Connection() {
   const [status, setStatus] = useState("");
@@ -65,13 +74,8 @@ export default function Connection() {
     setSubscribed(true);
   }
 
-  function onPublishHandler() {
-    if (disconnectIfNotConnected()) return;
-    setPublishPayload("");
-    var message = new Paho.MQTT.Message(id + ":" + publishPayload);
-    message._setQos(2);
-    message.destinationName = publishTopic;
-    client.send(message);
+  function onPublishHandler(){
+    publishMessage(publishPayload,publishTopic);
   }
 
   function unSubscribeHandler() {
@@ -82,8 +86,8 @@ export default function Connection() {
   }
 
   function connect() {
-    client = new Paho.MQTT.Client(host, port, path);
     setStatus("isFetching");
+    client=new Paho.MQTT.Client(host, port, publishTopic,id);
     client.connect({
       onSuccess: onSuccess,
       useSSL: false,
@@ -106,6 +110,7 @@ export default function Connection() {
     client.onConnectionLost = onConnectionLost;
   }, [client.isConnected()]);
 
+
   connectDisconnectHandler = () => {
     if (isMqttConnected) disconnect();
     else connect();
@@ -114,7 +119,7 @@ export default function Connection() {
   return (
     <View className="flex-1">
       <MessagesHandler client={client} />
-      <View style={styles.statusContainer}>
+      <View className={isMqttConnected ? "bg-black py-3 items-center justify-center" : "bg-red-600 py-3 items-center justify-center"}>
         <Text
           style={{
             color: "#fff",
@@ -243,12 +248,6 @@ export default function Connection() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  statusContainer: {
-    backgroundColor: "#000000",
-    paddingVertical: 10,
-    alignItems: "center",
-    justifyContent: "center",
   },
   mainContainer: {},
   subscribeContainer: {
