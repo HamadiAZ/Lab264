@@ -15,6 +15,7 @@ function Card({
   function onPressNavigate() {
     navigation.navigate("ListCards", { name, Data});
   }
+  
   function onPressSettings() {
     console.log("set ");
   } 

@@ -8,15 +8,12 @@ import { updateDeviceState } from '../../Store/dataSlice'
 import { getDeviceFromState } from "../../Store/dataSliceFunctions";
 
 function OpenCloseItem({ name, path ,Data,navigation}) {
-  
   const dispatch = useDispatch()
-
-  //const [isOn, setIsOn] = useState(false)
   const deviceState=getDeviceFromState(Data.cumulativePath); 
+  
   function toggleHandle() {
     let stateCopy={...deviceState};
     stateCopy.state=!stateCopy.state;
-    
     dispatch(updateDeviceState(stateCopy));
   }
 

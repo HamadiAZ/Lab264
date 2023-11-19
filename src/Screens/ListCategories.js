@@ -25,7 +25,6 @@ function ListCategories() {
   return (
     <View className="flex-1 bg-white">
       {list.map((categoryName, index) => {
-       console.log(categories[categoryName][0]);
         return (
           <Card
             key={index}

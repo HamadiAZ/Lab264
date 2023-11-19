@@ -9,17 +9,14 @@ export const DataSlice = createSlice({
   reducers: {
 
     updateDeviceState: (state, action) => {
-      //let newState=action.payload;
       let newState=action.payload;
-      console.log(newState)
-      setStateOfDevice(state,newState.cumulativePath,newState);
+      setStateOfDevice(state,newState);
     },
 
     updateCumulativePaths:(state)=>{
       updateCumulativePath(state);
     },
 
-    
   },
 })
 

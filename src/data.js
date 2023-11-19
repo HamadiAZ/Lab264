@@ -1,3 +1,16 @@
+
+import init from "react_native_mqtt";
+import { AsyncStorage } from "@react-native-async-storage/async-storage";
+init({
+  size: 10000,
+  storageBackend: AsyncStorage,
+  defaultExpires: 1000 * 3600 * 24,
+  enableCache: true,
+  sync: {},
+});
+
+export let client = new Paho.MQTT.Client("", 1, "");
+
 const separator = "/";
 let Lab01Data = [
   {
@@ -132,119 +145,7 @@ export let test = {
     },
   ],
 };
-export function getCategories(obj = test) {
-  return _getCategories(obj);
-}
-function _getCategories(obj, categories = {}, path = "") {
-  let newCumulativePath = path + separator + obj.path; // trying not to update the state so often
-  if (obj.cumulativePath != newCumulativePath)
-    obj.cumulativePath = newCumulativePath;
 
-  if (obj.type == "container") {
-    obj.Data.forEach((element) => {
-      categories = _getCategories(element, categories, newCumulativePath);
-    });
-  } else {
-    console.log(obj.cumulativePath);
-    if (categories[obj.category] == undefined) {
-      categories[obj.category] = [obj];
-    } else {
-      categories[obj.category].push(obj);
-    }
-  }
 
-  return categories;
-}
 
-export function getTypes(obj) {
-  return _getTypes(obj);
-}
-function _getTypes(obj, Types = {}, path = "") {
-  let newCumulativePath = path + separator + obj.path; // trying not to update the state so often
-  if (obj.cumulativePath != newCumulativePath)
-    obj.cumulativePath = newCumulativePath;
-  if (obj.type == "container") {
-    obj.Data.forEach((element) => {
-      Types = _getTypes(element, Types, obj.cumulativePath);
-    });
-  } else {
-    if (Types[obj.type] == undefined) {
-      Types[obj.type] = [obj];
-    } else {
-      Types[obj.type].push(obj);
-    }
-  }
-  return Types;
-}
 
-function updateCumulativePath(obj, path = "") {
-  let newCumulativePath = path + separator + obj.path; // trying not to update the state so often
-  if (obj.cumulativePath != newCumulativePath)
-    obj.cumulativePath = newCumulativePath; // trying not to update the state so often
-  if (obj.type == "container") {
-    obj.Data.forEach((element) => {
-      updateCumulativePath(element, newCumulativePath);
-    });
-  }
-  return obj;
-}
-
-function getElementByPath(cumulativePath = "", obj = test.Data[0]) {
-  if (obj.type != "container" || !obj.hasOwnProperty("Data")) {
-    if (obj.path == cumulativePath) {
-      return obj;
-    }
-    return undefined;
-  }
-
-  // container
-  searchedPart = cumulativePath;
-
-  //left part
-
-  if (cumulativePath.startsWith(separator))
-    searchedPart = cumulativePath.substring(length(separator));
-
-  let rightPartRemoved = searchedPart;
-  //remove right Part
-  if (obj.Data.length > 0) {
-    rightPartRemoved = searchedPart.split(separator)[0];
-  }
-
-  if (rightPartRemoved != obj.path) return undefined;
-
-  searchedPart = searchedPart.substring(
-    rightPartRemoved.length + separator.length
-  );
-
-  let result;
-
-  obj.Data.forEach((newObj) => {
-    const x = getElementByPath(searchedPart, newObj);
-    if (x !== undefined) {
-      result = x;
-      return;
-    }
-  });
-
-  return result;
-}
-
-function getAllDevices(obj) {
-  return _getAllDevices({ ...obj });
-}
-function _getAllDevices(obj, devices = [], path = "") {
-  if (obj.type == "container") {
-    path += (obj.separator == undefined ? separator : obj.separator) + obj.path;
-    obj.Data.forEach((element) => {
-      _getAllDevices(element, devices, path);
-    });
-  } else {
-    let newCumulativePath = path + separator + obj.path; // trying not to update the state so often
-    if (obj.cumulativePath != newCumulativePath)
-      obj.cumulativePath = newCumulativePath;
-
-    devices.push(obj);
-  }
-  return devices;
-}

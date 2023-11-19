@@ -6,11 +6,19 @@ import Connection from './Screens/Connection';
 import ListCards from './Screens/ListCards'; // import your new screen
 import ListCategories from './Screens/ListCategories';
 import ListTypes from './Screens/ListTypes';
+import { useDispatch } from 'react-redux';
+import { updateCumulativePaths } from './Store/dataSlice';
+import { useEffect } from 'react';
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
 
 const DrawerNavigator = () => {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(updateCumulativePaths());
+  }, [])
+ 
   return (
     <Drawer.Navigator initialRouteName="Home">
       <Drawer.Screen name="Home" component={Home} />
