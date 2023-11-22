@@ -7,19 +7,23 @@ function Card({
   name,
   path,
   Data,
+  card,
   showPath = true,
   showSetting = true,
+  redirect = false,
 }) {
-
   const navigation = useNavigation();
   function onPressNavigate() {
-    navigation.navigate("ListCards", { name, Data});
+    if (redirect == true) {
+      navigation.navigate(name, { name, Data, card });
+    } else {
+      navigation.navigate("ListCards", { name, Data });
+    }
   }
-  
+
   function onPressSettings() {
     console.log("set ");
-  } 
-
+  }
 
   return (
     <TouchableOpacity

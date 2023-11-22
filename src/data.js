@@ -2,6 +2,58 @@
 
 
 const separator = "/";
+
+//// LAB264 STATIC
+let Lab07Data = [
+  {
+    type: "Button",
+    name: "Light Control",
+    path: "LightControl",
+    cumulativePath: "",
+    category: "Lights",
+    state: false,
+    params: {
+      onMessage: "LightOn",
+      offMessage: "LightOff",
+    },
+  },
+  {
+    type: "Button",
+    name: "Fan Control",
+    path: "Fan",
+    cumulativePath: "",
+    category: "Fans",
+    state: false,
+    params: {
+      onMessage: "FanOn",
+      offMessage: "FanOff",
+    },
+  },
+  {
+    type: "Slider",
+    name: "Pressure Control",
+    path: "PressureControl",
+    cumulativePath: "",
+    category: "Pressure",
+    state: 0,
+    params: {
+      minValue: 0,
+      maxValue: 10,
+    },
+  },{
+    type: "Button",
+    name: "Door Control",
+    path: "Door",
+    cumulativePath: "",
+    category: "Doors",
+    state: false,
+    params: {
+      onMessage: "DoorOpen",
+      offMessage: "DoorClose",
+    },
+  },
+]
+
 let Lab01Data = [
   {
     type: "Button",
@@ -85,7 +137,7 @@ let Lab01Data = [
     params: {},
   },
 ];
-let Lab260Data = [
+let Lab264Data = [
   {
     type: "container",
     name: "Lab01",
@@ -102,15 +154,23 @@ let Lab260Data = [
     cumulativePath: "",
     Data: [],
   },
+  {
+    type: "container",
+    name: "Lab07",
+
+    path: "Lab07",
+    cumulativePath: "",
+    Data: Lab07Data,
+  },
 ];
 let EnigData = [
   {
     type: "container",
-    name: "Lab260",
+    name: "Lab264",
 
-    path: "Lab260",
+    path: "Lab264",
     cumulativePath: "",
-    Data: Lab260Data,
+    Data: Lab264Data,
   },
   {
     type: "container",
@@ -119,6 +179,26 @@ let EnigData = [
     path: "Lab256",
     cumulativePath: "",
     Data: [],
+  },
+];
+
+
+let Lab264StaticData = [
+  {
+    type: "container",
+    name: "Lab02",
+    path: "Lab02",
+    cumulativePath: "",
+    Data: [],
+    redirect:true,
+  },
+  {
+    type: "container",
+    name: "Lab07",
+    path: "Lab07",
+    cumulativePath: "",
+    Data: [],
+    redirect:true,
   },
 ];
 export let test = {
@@ -132,6 +212,12 @@ export let test = {
       name: "Enig",
       path: "ENIG",
       Data: EnigData,
+    },
+    {
+      type: "container",
+      name: "Lab264 : static labs",
+      path: "ENIG/Lab264",
+      Data: Lab264StaticData,
     },
   ],
 };

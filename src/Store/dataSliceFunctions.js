@@ -11,6 +11,11 @@ export function getDeviceFromState(cumulativePath) {
   return getElementByPath(cumulativePath, reduxData);
 }
 
+export function getListDeviceFromState(cumulativePath) {
+  const reduxData = useSelector((state) => state.data);
+  return getListElementByPath(cumulativePath, reduxData);
+}
+
 export function updateCumulativePath(obj, path = "") {
   let newSeparator = obj.separator == undefined ? separator : obj.separator;
   let newCumulativePath = path + newSeparator + obj.path; // trying not to update the state so often
@@ -19,7 +24,7 @@ export function updateCumulativePath(obj, path = "") {
     obj.cumulativePath = newCumulativePath; // trying not to update the state so often
   if (obj.type == "container") {
     obj.Data.forEach((element) => {
-      updateCumulativePath(element, newCumulativePath);
+       updateCumulativePath(element, newCumulativePath);
     });
   }
   return obj;
@@ -101,6 +106,7 @@ function _getElementByPath(cumulativePath = "", obj) {
     searchedPart = cumulativePath.substring(separator.length);
 
   let rightPartRemoved = searchedPart;
+ 
   //remove right Part
   if (obj.Data.length > 0) {
     rightPartRemoved = searchedPart.split(separator)[0];
@@ -113,12 +119,65 @@ function _getElementByPath(cumulativePath = "", obj) {
   );
 
   let result;
-
+ /*  console.log("searchedPart ")
+  console.log(searchedPart) */
   obj.Data.forEach((newObj) => {
+
     const x = _getElementByPath(searchedPart, newObj);
     if (x !== undefined) {
       result = x;
       return;
+    }
+  });
+
+  return result;
+}
+
+
+function getListElementByPath(cumulativePath = "", obj) {
+  let foundList=[];
+  obj.Data.forEach((element) => {
+    let result = _getListElementByPath(cumulativePath, element);
+    if (result != undefined) foundList.push(...result);
+  });
+  return foundList;
+}
+function _getListElementByPath(cumulativePath = "", obj) {
+  if (obj.type != "container" || !obj.hasOwnProperty("Data")) {
+    if (obj.path.includes(cumulativePath)) {
+      return [obj];
+    }
+    return undefined;
+  }
+
+  // container
+  searchedPart = cumulativePath;
+
+  //left part
+
+  if (cumulativePath.startsWith(separator))
+    searchedPart = cumulativePath.substring(separator.length);
+
+  let rightPartRemoved = searchedPart;
+ 
+  //remove right Part
+  if (obj.Data.length > 0) {
+    rightPartRemoved = searchedPart.split(separator)[0];
+  }
+
+  if (rightPartRemoved != obj.path) return undefined;
+
+  searchedPart = searchedPart.substring(
+    rightPartRemoved.length + separator.length
+  );
+
+  let result=[];
+  /* console.log("searchedPart ")
+  console.log(searchedPart) */
+  obj.Data.forEach((newObj) => {
+    const x = _getListElementByPath(searchedPart, newObj);
+    if (x !== undefined) {
+      result.push(...x);
     }
   });
 

@@ -9,6 +9,9 @@ import ListTypes from './Screens/ListTypes';
 import { useDispatch } from 'react-redux';
 import { updateCumulativePaths } from './Store/dataSlice';
 import { useEffect } from 'react';
+import Lab07 from './Screens/lab264/Lab07/Lab07';
+import Lab02 from './Screens/lab264/Lab02';
+
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -35,6 +38,8 @@ const AppNavigator = () => {
     <Stack.Navigator initialRouteName="DrawerNavigator">
       <Stack.Screen name="DrawerNavigator" component={DrawerNavigator} options={{headerShown: false}} />
       <Stack.Screen name="ListCards" component={ListCards} />
+      <Stack.Screen name="Lab07" component={Lab07} />
+      <Stack.Screen name="Lab02" component={Lab02} />
     </Stack.Navigator>
   );
 };

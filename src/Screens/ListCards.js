@@ -28,8 +28,10 @@ function ListCards({ route }) {
   return (
     <ScrollView className="bg-white">
       <ConnectionStatusBar />
-      {list.map((card, index) => {
-
+      {
+      
+      list.map((card, index) => {
+        console.log(card)
         if (card.type == "container")
           return (
             <Card
@@ -37,12 +39,14 @@ function ListCards({ route }) {
               name={card.name}
               path={card.cumulativePath}
               Data={card.Data}
+              card={card}
               separator={card.separator}
+              showSetting={!card.redirect}
+              redirect={card.redirect}
             />
           );
           if (card.type == "Slider")
           return ( 
-        
             <SliderItem
               key={index}
               name={card.name}

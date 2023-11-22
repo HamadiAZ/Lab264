@@ -62,7 +62,7 @@ useEffect(() => {
 
 
   return (
-    <View className="bg-gray-100 min-w-max mx-1 rounded-l mt-1 ">
+    <View className="bg-gray-100 min-w-max mx-1 rounded-l mt-1">
       <TouchableOpacity className="flex flex-row justify-between">
         <View className="flex align-baseline justify-evenly h-20 w-auto rounded-sm p-3 ">
           <Text className="text-black text-xl">{name}</Text>

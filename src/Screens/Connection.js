@@ -27,6 +27,7 @@ export function publishMessage(publishPayload,publishTopic) {
   var message = new Paho.MQTT.Message(publishPayload.toString());
   message._setQos(2);
   message.destinationName = publishTopic;
+  message._setRetained(true);
   client.send(message);
 }
 
