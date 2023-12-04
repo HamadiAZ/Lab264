@@ -46,10 +46,12 @@ export default function Connection() {
 
   const dispatch = useDispatch();
 
-  const [host, setHost] = useState("192.168.0.219");
-  const [port, setPort] = useState(9001);
-  const [id, setId] = useState("Client_" + parseInt(Math.random() * 100000));
-  const [path, setPath] = useState("ENIG/Lab264/");
+  //const [host, setHost] = useState("192.168.0.219");
+  //const [port, setPort] = useState(9001);
+  const [host, setHost] = useState("ef4c58ce97fa40909e09b783589dd584.s1.eu.hivemq.cloud");
+  const [port, setPort] = useState(8883);
+  const [id, setId] = useState("Client" + parseInt(Math.random() * 100000));
+  const [path, setPath] = useState("");
 
   const onSuccess = () => {
     console.info("Mqtt Connected");
@@ -61,9 +63,8 @@ export default function Connection() {
     });
   };
 
-  const onConnectionLost = () => {
-    console.log("onConnectionLost() ");
-    console.log("onConnectionLost() " + client.isConnected());
+  const onConnectionLost = (e) => {
+    console.log(e);
     dispatch(setIsConnected(false));
     setStatus("notConnected");
     console.info("Mqtt Failed to connect");
@@ -90,9 +91,14 @@ export default function Connection() {
     setStatus("isFetching");
     client=new Paho.MQTT.Client(host, port, publishTopic,id);
     client.connect({
+
       onSuccess: onSuccess,
+      userName:"lab264",
+      password:"MrRidhaHamdi264",
       useSSL: false,
       timeout: 3,
+      hosts:["http://ef4c58ce97fa40909e09b783589dd584.s1.eu.hivemq.cloud:8883/mqtt"],
+      ports:[8883],
       onFailure: onConnectionLost,
     });
   }
@@ -146,7 +152,10 @@ export default function Connection() {
             className="pr-2"
             value={port.toString()}
             autoCapitalize={"none"}
-            onChangeText={setPort}
+            keyboardType="numeric"
+            onChangeText={t=>{
+              if(parseInt(t)!=NaN) setPort(parseInt(t))
+            }}
           />
         </View>
         <View className="flex flex-row gap-2 items-center justify-center">

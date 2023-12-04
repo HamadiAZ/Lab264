@@ -11,6 +11,7 @@ function Card({
   showPath = true,
   showSetting = true,
   redirect = false,
+  toggleSettings
 }) {
   const navigation = useNavigation();
   function onPressNavigate() {
@@ -22,7 +23,7 @@ function Card({
   }
 
   function onPressSettings() {
-    console.log("set ");
+    toggleSettings(card);
   }
 
   return (

@@ -17,7 +17,7 @@ import PressureControl from "./PressureControl";
 import DoorControl from "./DoorControl";
 
 const Lab07 = ({ route }) => {
-  const navigation = useNavigation();
+
   let cumulativePath = route.params.card.cumulativePath;
   const listOfData = getListDeviceFromState(cumulativePath);
 

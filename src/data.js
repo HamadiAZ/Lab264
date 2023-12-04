@@ -218,6 +218,7 @@ export let test = {
       name: "Lab264 : static labs",
       path: "ENIG/Lab264",
       Data: Lab264StaticData,
+      redirect:true,
     },
   ],
 };
