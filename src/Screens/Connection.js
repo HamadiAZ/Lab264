@@ -48,8 +48,8 @@ export default function Connection() {
 
   //const [host, setHost] = useState("192.168.0.219");
   //const [port, setPort] = useState(9001);
-  const [host, setHost] = useState("ef4c58ce97fa40909e09b783589dd584.s1.eu.hivemq.cloud");
-  const [port, setPort] = useState(8883);
+  const [host, setHost] = useState("192.168.0.1");
+  const [port, setPort] = useState(9001);
   const [id, setId] = useState("Client" + parseInt(Math.random() * 100000));
   const [path, setPath] = useState("");
 
@@ -91,14 +91,9 @@ export default function Connection() {
     setStatus("isFetching");
     client=new Paho.MQTT.Client(host, port, publishTopic,id);
     client.connect({
-
       onSuccess: onSuccess,
-      userName:"lab264",
-      password:"MrRidhaHamdi264",
       useSSL: false,
       timeout: 3,
-      hosts:["http://ef4c58ce97fa40909e09b783589dd584.s1.eu.hivemq.cloud:8883/mqtt"],
-      ports:[8883],
       onFailure: onConnectionLost,
     });
   }
