@@ -12,6 +12,7 @@ import { setIsConnected } from "../Store/mqttSlice";
 import init from "react_native_mqtt";
 
 import MessagesHandler from "../Components/MessagesHandler";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 init({
   size: 10000,
@@ -20,9 +21,9 @@ init({
   enableCache: true,
   sync: {},
 });
-let client= new Paho.MQTT.Client("", 1, "");
+let client = new Paho.MQTT.Client("", 1, "");
 
-export function publishMessage(publishPayload,publishTopic) {
+export function publishMessage(publishPayload, publishTopic) {
   if (!client.isConnected()) return;
   var message = new Paho.MQTT.Message(publishPayload.toString());
   message._setQos(2);
@@ -48,10 +49,11 @@ export default function Connection() {
 
   //const [host, setHost] = useState("192.168.0.219");
   //const [port, setPort] = useState(9001);
-  const [host, setHost] = useState("192.168.0.1");
-  const [port, setPort] = useState(9001);
+  const [host, setHost] = useState("ef4c58ce97fa40909e09b783589dd584.s1.eu.hivemq.cloud");
+  const [port, setPort] = useState("8884");
   const [id, setId] = useState("Client" + parseInt(Math.random() * 100000));
   const [path, setPath] = useState("");
+  const [isCloudConnection, setIsCloudConnection] = useState(false)
 
   const onSuccess = () => {
     console.info("Mqtt Connected");
@@ -76,8 +78,8 @@ export default function Connection() {
     setSubscribed(true);
   }
 
-  function onPublishHandler(){
-    publishMessage(publishPayload,publishTopic);
+  function onPublishHandler() {
+    publishMessage(publishPayload, publishTopic);
   }
 
   function unSubscribeHandler() {
@@ -89,14 +91,18 @@ export default function Connection() {
 
   function connect() {
     setStatus("isFetching");
-    client=new Paho.MQTT.Client(host, port, publishTopic,id);
+    client = new Paho.MQTT.Client(host, Number(port), publishTopic, id);
     client.connect({
       onSuccess: onSuccess,
-      useSSL: false,
+      useSSL: true,
+      userName: "lab264",
+      password: "MrRidhaHamdi264",
       timeout: 3,
+      uris: ["ws://" + host + ":" + Number(port) + "/mqtt"],
       onFailure: onConnectionLost,
     });
   }
+  // "ws://ef4c58ce97fa40909e09b783589dd584.s1.eu.hivemq.cloud:8884/mqtt"
   function disconnectIfNotConnected() {
     if (client.isConnected()) return false;
     disconnect();
@@ -112,96 +118,57 @@ export default function Connection() {
     client.onConnectionLost = onConnectionLost;
   }, [client.isConnected()]);
 
-
   connectDisconnectHandler = () => {
     if (isMqttConnected) disconnect();
     else connect();
   };
+  const handleTextChange = (text) => {
+    // Replace any non-numeric characters with an empty string
+    const numericText = text.replace(/[^0-9]/g, '');
+    setPort(numericText);
+  };
+   function handleCloudSwitch(){
+      setIsCloudConnection((prev)=>!prev)
+   }
 
   return (
     <View className="flex-1">
       <MessagesHandler client={client} />
-      <View className={isMqttConnected ? "bg-black py-3 items-center justify-center" : "bg-red-600 py-3 items-center justify-center"}>
+      <TouchableOpacity onPress={handleCloudSwitch} className={isMqttConnected ? "bg-black py-3 items-center justify-center" : "bg-red-600 py-3 items-center justify-center"}>
         <Text
           style={{
             color: "#fff",
             fontWeight: "600",
           }}
         >
-          {isMqttConnected ? "MQTT connected" : "Not connected"}
+          {isMqttConnected ? "MQTT connected" : "Not connected"} - {isCloudConnection ? " Cloud":" Local"}
         </Text>
-      </View>
+      </TouchableOpacity>
       <View className="justify-center items-center max-h-40">
         <View className="flex flex-row gap-2 items-center justify-center">
           <Text className="pl-9">Host :</Text>
-          <TextInput
-            value={host}
-            autoCapitalize={"none"}
-            onChangeText={setHost}
-          />
+          <TextInput value={host} autoCapitalize={"none"} style={{maxWidth:"70%"}} onChangeText={setHost} className="w-fit overflow-auto" />
         </View>
         <View className="flex flex-row gap-2 items-center justify-center">
           <Text>Port :</Text>
 
-          <TextInput
-            className="pr-2"
-            value={port.toString()}
-            autoCapitalize={"none"}
-            keyboardType="numeric"
-            onChangeText={t=>{
-              if(parseInt(t)!=NaN) setPort(parseInt(t))
-            }}
-          />
+          <TextInput className="pr-2" keyboardType="numeric" onChangeText={handleTextChange} value={port} />
         </View>
         <View className="flex flex-row gap-2 items-center justify-center">
           <Text>Client Id :</Text>
-          <TextInput
-            className="pr-2"
-            value={id}
-            autoCapitalize={"none"}
-            onChangeText={setId}
-          />
+          <TextInput className="pr-2" value={id} autoCapitalize={"none"} onChangeText={setId} />
         </View>
         <View className="flex flex-row gap-2 items-center justify-center">
           <Text className="">Path :</Text>
-          <TextInput
-            placeholder={"enter Path"}
-            value={path}
-            autoCapitalize={"none"}
-            onChangeText={setPath}
-          />
+          <TextInput placeholder={"enter Path"} value={path} autoCapitalize={"none"} onChangeText={setPath} />
         </View>
       </View>
-      <Button
-        type="solid"
-        title={
-          status == "isFetching"
-            ? "connecting"
-            : !isMqttConnected
-            ? "connect"
-            : "disconnect"
-        }
-        onPress={connectDisconnectHandler}
-        color={isMqttConnected ? "red" : "#42b883"}
-        disabled={status == "isFetching"}
-      />
+      <Button type="solid" title={status == "isFetching" ? "connecting" : !isMqttConnected ? "connect" : "disconnect"} onPress={connectDisconnectHandler} color={isMqttConnected ? "red" : "#42b883"} disabled={status == "isFetching"} />
       <View style={styles.mainContainer}>
         {!isSubscribed ? (
           <View style={styles.subscribeContainer}>
-            <TextInput
-              placeholder="Enter topic to Subscribe"
-              value={subscribeTopic}
-              autoCapitalize={"none"}
-              onChangeText={setSubscribeTopic}
-              style={styles.inputStyle}
-            />
-            <Button
-              type="solid"
-              title="Subscribe"
-              onPress={onSubscribeHandler}
-              color="#42b883"
-              disabled={!subscribeTopic}
-            />
+            <TextInput placeholder="Enter topic to Subscribe" value={subscribeTopic} autoCapitalize={"none"} onChangeText={setSubscribeTopic} style={styles.inputStyle} />
+            <Button type="solid" title="Subscribe" onPress={onSubscribeHandler} color="#42b883" disabled={!subscribeTopic} />
           </View>
         ) : (
           <View style={styles.subscribeContainer}>
@@ -213,38 +180,15 @@ export default function Connection() {
             >
               Subscribed topic: {subscribeTopic}
             </Text>
-            <Button
-              type="solid"
-              title="UnSubscribe"
-              onPress={unSubscribeHandler}
-              color="#42b883"
-            />
+            <Button type="solid" title="UnSubscribe" onPress={unSubscribeHandler} color="#42b883" />
           </View>
         )}
       </View>
       <View style={styles.publishContainer}>
-        <TextInput
-          placeholder="Enter topic to publish"
-          value={publishTopic}
-          autoCapitalize={"none"}
-          onChangeText={setPublishTopic}
-          style={styles.inputStyle}
-        />
-        <TextInput
-          placeholder="Enter Message"
-          value={publishPayload}
-          autoCapitalize={"none"}
-          onChangeText={setPublishPayload}
-          style={styles.inputStylePublish}
-        />
+        <TextInput placeholder="Enter topic to publish" value={publishTopic} autoCapitalize={"none"} onChangeText={setPublishTopic} style={styles.inputStyle} />
+        <TextInput placeholder="Enter Message" value={publishPayload} autoCapitalize={"none"} onChangeText={setPublishPayload} style={styles.inputStylePublish} />
 
-        <Button
-          type="solid"
-          title="Publish"
-          onPress={onPublishHandler}
-          color="#42b883"
-          disabled={!(publishTopic && publishPayload)}
-        />
+        <Button type="solid" title="Publish" onPress={onPublishHandler} color="#42b883" disabled={!(publishTopic && publishPayload)} />
       </View>
     </View>
   );
