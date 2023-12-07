@@ -13,6 +13,8 @@ import init from "react_native_mqtt";
 
 import MessagesHandler from "../Components/MessagesHandler";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { storeObject } from "../Utils/asyncStorage";
+import CloudCnx from "../Components/Connection/CloudCnx";
 
 init({
   size: 10000,
@@ -47,13 +49,14 @@ export default function Connection() {
 
   const dispatch = useDispatch();
 
-  //const [host, setHost] = useState("192.168.0.219");
-  //const [port, setPort] = useState(9001);
-  const [host, setHost] = useState("ef4c58ce97fa40909e09b783589dd584.s1.eu.hivemq.cloud");
-  const [port, setPort] = useState("8884");
-  const [id, setId] = useState("Client" + parseInt(Math.random() * 100000));
-  const [path, setPath] = useState("");
-  const [isCloudConnection, setIsCloudConnection] = useState(false)
+  const [Chost, setCHost] = useState("ef4c58ce97fa40909e09b783589dd584.s1.eu.hivemq.cloud");
+  const [Cport, setCPort] = useState("8884");
+  const [Cid, setCId] = useState("Client" + parseInt(Math.random() * 100000));
+  const [Cpath, setCPath] = useState("");
+  const [CuserName, setCUserName] = useState("");
+  const [Cpassword, setCPassword] = useState("");
+
+  const [isCloudConnection, setIsCloudConnection] = useState(false);
 
   const onSuccess = () => {
     console.info("Mqtt Connected");
@@ -89,9 +92,12 @@ export default function Connection() {
     setSubscribed(false);
   }
 
-  function connect() {
+  function connect({host,port,id,path,userName,password}) {
     setStatus("isFetching");
     client = new Paho.MQTT.Client(host, Number(port), publishTopic, id);
+
+    connectionObject = { local: { host, port, userName, password, path }, cloud: { Chost, Cport, CuserName, Cpassword, Cpath } };
+    storeObject("connectionData", connectionObject);
     client.connect({
       onSuccess: onSuccess,
       useSSL: true,
@@ -118,18 +124,14 @@ export default function Connection() {
     client.onConnectionLost = onConnectionLost;
   }, [client.isConnected()]);
 
-  connectDisconnectHandler = () => {
+  connectDisconnectHandler = (params) => {
     if (isMqttConnected) disconnect();
-    else connect();
+    else connect(params);
   };
-  const handleTextChange = (text) => {
-    // Replace any non-numeric characters with an empty string
-    const numericText = text.replace(/[^0-9]/g, '');
-    setPort(numericText);
-  };
-   function handleCloudSwitch(){
-      setIsCloudConnection((prev)=>!prev)
-   }
+
+  function handleCloudSwitch() {
+    setIsCloudConnection((prev) => !prev);
+  }
 
   return (
     <View className="flex-1">
@@ -141,29 +143,11 @@ export default function Connection() {
             fontWeight: "600",
           }}
         >
-          {isMqttConnected ? "MQTT connected" : "Not connected"} - {isCloudConnection ? " Cloud":" Local"}
+          {isMqttConnected ? "MQTT connected" : "Not connected"} - {isCloudConnection ? " Cloud" : " Local"}
         </Text>
       </TouchableOpacity>
-      <View className="justify-center items-center max-h-40">
-        <View className="flex flex-row gap-2 items-center justify-center">
-          <Text className="pl-9">Host :</Text>
-          <TextInput value={host} autoCapitalize={"none"} style={{maxWidth:"70%"}} onChangeText={setHost} className="w-fit overflow-auto" />
-        </View>
-        <View className="flex flex-row gap-2 items-center justify-center">
-          <Text>Port :</Text>
-
-          <TextInput className="pr-2" keyboardType="numeric" onChangeText={handleTextChange} value={port} />
-        </View>
-        <View className="flex flex-row gap-2 items-center justify-center">
-          <Text>Client Id :</Text>
-          <TextInput className="pr-2" value={id} autoCapitalize={"none"} onChangeText={setId} />
-        </View>
-        <View className="flex flex-row gap-2 items-center justify-center">
-          <Text className="">Path :</Text>
-          <TextInput placeholder={"enter Path"} value={path} autoCapitalize={"none"} onChangeText={setPath} />
-        </View>
-      </View>
-      <Button type="solid" title={status == "isFetching" ? "connecting" : !isMqttConnected ? "connect" : "disconnect"} onPress={connectDisconnectHandler} color={isMqttConnected ? "red" : "#42b883"} disabled={status == "isFetching"} />
+      <CloudCnx status={status} connectDisconnectHandler={connectDisconnectHandler}/>
+     
       <View style={styles.mainContainer}>
         {!isSubscribed ? (
           <View style={styles.subscribeContainer}>
