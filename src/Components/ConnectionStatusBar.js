@@ -5,6 +5,7 @@ import { View, Text, TouchableOpacity } from "react-native";
 
 function ConnectionStatusBar() {
     const isMqttConnected = useSelector((state) => state.mqtt.isConnected);
+    const isCloudConnection = useSelector((state) => state.mqtt.isCloudConnection);
     const navigation = useNavigation();
     function onPressNavigate() {
       navigation.navigate("Connection manager");
@@ -17,7 +18,7 @@ function ConnectionStatusBar() {
             fontWeight: "600",
           }}
         >
-          {isMqttConnected ? "MQTT connected" : "Not connected"}
+          {isMqttConnected ? "MQTT connected" : "Not connected"} - {isCloudConnection ? " Cloud" : " Local"}
         </Text>
     </TouchableOpacity>
   )
