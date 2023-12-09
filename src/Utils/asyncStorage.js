@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export async function storeObject(key, value) {
   try {
@@ -47,7 +47,7 @@ export async function readObject(key, setFunction = undefined) {
 
 export async function removeItem(key) {
   try {
-     await AsyncStorage.removeItem(key);
+    await AsyncStorage.removeItem(key);
   } catch (e) {
     console.log("readObject from async storage : Error for key : " + key + " || " + e);
     return undefined;

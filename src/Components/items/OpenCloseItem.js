@@ -1,11 +1,10 @@
-import React, { useState } from "react";
-import { View, Text, TouchableOpacity, Animated, Alert } from "react-native";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import React from "react";
+import { Alert, Text, TouchableOpacity, View } from "react-native";
 
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { publishMessage } from "../../Screens/Connection";
 import { updateDeviceState } from "../../Store/dataSlice";
 import { getDeviceFromState } from "../../Store/dataSliceFunctions";
-import { publishMessage } from "../../Screens/Connection";
 
 function OpenCloseItem({ name, path, Data }) {
   const dispatch = useDispatch();
@@ -13,15 +12,12 @@ function OpenCloseItem({ name, path, Data }) {
   const isMqttConnected = useSelector((state) => state.mqtt.isConnected);
   function toggleHandle() {
     if (!isMqttConnected) {
-      Alert.alert("Cant flip the switch","Please connect to your broker first!");
+      Alert.alert("Cant flip the switch", "Please connect to your broker first!");
       return;
     }
     let stateCopy = { ...deviceState };
     stateCopy.state = !stateCopy.state;
-    let message =
-      stateCopy.state == true
-        ? stateCopy.params.onMessage
-        : stateCopy.params.offMessage;
+    let message = stateCopy.state == true ? stateCopy.params.onMessage : stateCopy.params.offMessage;
     publishMessage(message, Data.cumulativePath);
     dispatch(updateDeviceState(stateCopy));
   }
@@ -32,10 +28,7 @@ function OpenCloseItem({ name, path, Data }) {
         <Text className="text-black text-xl">{name}</Text>
         <Text className="text-gray-500">{path}/</Text>
       </View>
-      <View
-        className="flex  align-baseline justify-center bg-gray-100 h-20 rounded-sm mr-4"
-        onPress={toggleHandle}
-      >
+      <View className="flex  align-baseline justify-center bg-gray-100 h-20 rounded-sm mr-4" onPress={toggleHandle}>
         <TouchableOpacity
           activeOpacity={0.5}
           style={{

@@ -1,12 +1,9 @@
-import { View, Text ,Animated } from "react-native";
-import React from "react";
-import { useEffect,useRef } from "react";
-import { Easing } from "react-native-reanimated";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-
+import React, { useEffect, useRef } from "react";
+import { Animated } from "react-native";
+import { Easing } from "react-native-reanimated";
 
 const TurningFan = () => {
-
   const spinValue = useRef(new Animated.Value(0)).current;
 
   const spin = spinValue.interpolate({
@@ -23,12 +20,10 @@ const TurningFan = () => {
         useNativeDriver: true,
       })
     ).start();
-
-
   }, []);
   return (
     <Animated.View style={{ transform: [{ rotate: spin }] }}>
-      <MaterialCommunityIcons name="fan" size={80} color="black" />
+      <MaterialCommunityIcons name="fan" size={70} color="black" style={{ opacity: 0.8 }} />
     </Animated.View>
   );
 };

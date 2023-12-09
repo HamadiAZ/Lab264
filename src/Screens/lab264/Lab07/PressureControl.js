@@ -1,17 +1,11 @@
-import { View, Text } from "react-native";
-import React from "react";
-import { publishMessage } from "../../Connection";
-import { updateDeviceState } from "../../../Store/dataSlice";
-import { useDispatch, useSelector } from "react-redux";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { getDeviceFromState } from "../../../Store/dataSliceFunctions";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { Alert } from "react-native";
-import SliderItem from "../../../Components/items/SliderItem";
-import { useEffect } from "react";
-import { useSharedValue } from "react-native-reanimated";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { Alert, Text, View } from "react-native";
 import { Slider } from "react-native-awesome-slider";
+import { useSharedValue } from "react-native-reanimated";
+import { useDispatch, useSelector } from "react-redux";
+import { updateDeviceState } from "../../../Store/dataSlice";
+import { getDeviceFromState } from "../../../Store/dataSliceFunctions";
+import { publishMessage } from "../../Connection";
 
 const PressureControl = ({ Data }) => {
   const dispatch = useDispatch();
@@ -41,19 +35,14 @@ const PressureControl = ({ Data }) => {
       return;
     }
     const tenPower = 10 ^ numberAfterComma;
-    const roundedValue = (Math.round(newValue * tenPower) / tenPower).toFixed(
-      numberAfterComma
-    );
+    const roundedValue = (Math.round(newValue * tenPower) / tenPower).toFixed(numberAfterComma);
     setValue(roundedValue);
     return roundedValue;
   }
 
   function onSlidingComplete(newValue) {
     if (!isMqttConnected) {
-      Alert.alert(
-        "Cant change slider value",
-        "Please connect to your broker first!"
-      );
+      Alert.alert("Cant change slider value", "Please connect to your broker first!");
       return;
     }
     const x = updateValue(newValue);
@@ -65,7 +54,7 @@ const PressureControl = ({ Data }) => {
   useEffect(() => {
     sliderValue.value = deviceState.state;
     updateValue(deviceState.state);
-  }, [deviceState.state]); 
+  }, [deviceState.state]);
 
   return (
     <View className="bg-gray-100 min-w-max mx-1 rounded-l mt-1 ">
@@ -75,15 +64,7 @@ const PressureControl = ({ Data }) => {
       </Text>
 
       <View className="px-4 pb-3 h-7">
-        <Slider
-          progress={sliderValue}
-          minimumValue={min}
-          maximumValue={max}
-          onValueChange={updateValue}
-          onSlidingComplete={onSlidingComplete}
-          theme={SliderTheme}
-          disableTapEvent={true}
-        />
+        <Slider progress={sliderValue} minimumValue={min} maximumValue={max} onValueChange={updateValue} onSlidingComplete={onSlidingComplete} theme={SliderTheme} disableTapEvent={true} />
       </View>
     </View>
   );

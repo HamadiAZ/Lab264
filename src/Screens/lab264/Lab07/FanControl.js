@@ -1,13 +1,12 @@
-import { View, Text, Animated, Easing } from "react-native";
-import React, { useRef, useEffect } from "react";
-import { publishMessage } from "../../Connection";
-import { updateDeviceState } from "../../../Store/dataSlice";
-import { useDispatch, useSelector } from "react-redux";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { getDeviceFromState } from "../../../Store/dataSliceFunctions";
+import React, { useEffect, useRef } from "react";
+import { Alert, Animated, Easing } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { Alert } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 import TurningFan from "../../../Components/TurningFan";
+import { updateDeviceState } from "../../../Store/dataSlice";
+import { getDeviceFromState } from "../../../Store/dataSliceFunctions";
+import { publishMessage } from "../../Connection";
 
 const FanControl = ({ Data }) => {
   const dispatch = useDispatch();
@@ -16,18 +15,12 @@ const FanControl = ({ Data }) => {
 
   function toggleHandle() {
     if (!isMqttConnected) {
-      Alert.alert(
-        "Cant Turn on the fan",
-        "Please connect to your broker first!"
-      );
+      Alert.alert("Cant Turn on the fan", "Please connect to your broker first!");
       return;
     }
     let stateCopy = { ...deviceState };
     stateCopy.state = !stateCopy.state;
-    let message =
-      stateCopy.state == true
-        ? stateCopy.params.onMessage
-        : stateCopy.params.offMessage;
+    let message = stateCopy.state == true ? stateCopy.params.onMessage : stateCopy.params.offMessage;
     publishMessage(message, Data.cumulativePath);
     dispatch(updateDeviceState(stateCopy));
   }
@@ -50,14 +43,8 @@ const FanControl = ({ Data }) => {
   }, []);
 
   return (
-    <TouchableOpacity onPress={toggleHandle} className="w-20">
-      {deviceState.state ? (
-        <TurningFan />
-      ) : (
-    
-          <MaterialCommunityIcons name="fan" size={80} color="black" />
-       
-      )}
+    <TouchableOpacity onPress={toggleHandle} className="w-19">
+      {deviceState.state ? <TurningFan /> : <MaterialCommunityIcons name="fan" size={70} color="black" style={{ opacity: 0.1 }} />}
     </TouchableOpacity>
   );
 };

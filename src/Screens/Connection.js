@@ -1,20 +1,17 @@
-import { StatusBar } from "expo-status-bar";
-import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View, TextInput, Button } from "react-native";
 import { AsyncStorage } from "@react-native-async-storage/async-storage";
-import { Ionicons, Material, CommunityIcons } from "@expo/vector-icons";
+import React, { useEffect, useState } from "react";
+import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 
-import { useSelector, useDispatch } from "react-redux";
-import { updateCumulativePaths, updateDeviceState } from "../Store/dataSlice";
+import { useDispatch, useSelector } from "react-redux";
 import { getAllDevices } from "../Store/dataSliceFunctions";
 import { setIsCloudConnection, setIsConnected } from "../Store/mqttSlice";
 
 import init from "react_native_mqtt";
 
-import MessagesHandler from "../Components/MessagesHandler";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { readObject, removeItem, storeObject } from "../Utils/asyncStorage";
 import { CheckBox } from "@rneui/themed";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import MessagesHandler from "../Components/MessagesHandler";
+import { readObject, storeObject } from "../Utils/asyncStorage";
 
 init({
   size: 10000,
@@ -33,7 +30,7 @@ export function publishMessage(publishPayload, publishTopic) {
   message._setRetained(true);
   client.send(message);
 }
-const initialLocalData={
+const initialLocalData = {
   host: "192.168.0.219",
   port: "9001",
   id: "Client" + parseInt(Math.random() * 100000),
@@ -61,7 +58,7 @@ export default function Connection() {
   const dispatch = useDispatch();
 
   const [connectionParams, setConnectionParams] = useState(initialLocalData);
-  let { host, port, userName, password, path, useSSL, isAuth ,id} = connectionParams;
+  let { host, port, userName, password, path, useSSL, isAuth, id } = connectionParams;
 
   const onSuccess = () => {
     console.info("Mqtt Connected");
@@ -101,7 +98,7 @@ export default function Connection() {
     setStatus("isFetching");
     client = new Paho.MQTT.Client(host, Number(port), publishTopic, id);
 
-    connectionObject = { host, port, userName, password, path, useSSL, isAuth ,id};
+    connectionObject = { host, port, userName, password, path, useSSL, isAuth, id };
     if (isCloudConnection) storeObject("cloudConnectionCredential", connectionObject);
     else storeObject("localConnectionCredential", connectionObject);
 
@@ -111,7 +108,7 @@ export default function Connection() {
       userName: isAuth ? userName : "",
       password: isAuth ? password : "",
       timeout: 3,
-      uris: ["ws://" + host + ":" + Number(port) + (path.startsWith("/") ? path : "/"+path)],
+      uris: ["ws://" + host + ":" + Number(port) + (path.startsWith("/") ? path : "/" + path)],
       onFailure: onConnectionLost,
     });
   }
@@ -173,7 +170,7 @@ export default function Connection() {
         }
       });
   }, [isCloudConnection]);
-  console.log("rerendered");
+
   return (
     <View className="flex-1">
       <MessagesHandler client={client} />
@@ -190,7 +187,7 @@ export default function Connection() {
       <View className="justify-center items-center max-h-60">
         <View className="flex flex-row gap-2 items-center justify-center">
           <Text className="pl-9">Host :</Text>
-          <TextInput value={host} autoCapitalize={"none"} style={{ maxWidth: "70%" }} onChangeText={(newVal)=>setConnectionParams((prev) => ({ ...prev, host: newVal }))} className="w-fit overflow-auto" />
+          <TextInput value={host} autoCapitalize={"none"} style={{ maxWidth: "70%" }} onChangeText={(newVal) => setConnectionParams((prev) => ({ ...prev, host: newVal }))} className="w-fit overflow-auto" />
         </View>
         <View className="flex flex-row gap-2 items-center justify-center">
           <Text>Port :</Text>
@@ -199,23 +196,23 @@ export default function Connection() {
         </View>
         <View className="flex flex-row gap-2 items-center justify-center">
           <Text>Client Id :</Text>
-          <TextInput className="pr-2" value={id} autoCapitalize={"none"} onChangeText={(newVal)=>setConnectionParams((prev) => ({ ...prev, id: newVal }))} />
+          <TextInput className="pr-2" value={id} autoCapitalize={"none"} onChangeText={(newVal) => setConnectionParams((prev) => ({ ...prev, id: newVal }))} />
         </View>
         <View className="flex flex-row gap-2 items-center justify-center">
           <Text className="">Path :</Text>
-          <TextInput placeholder={"enter Path"} value={path} autoCapitalize={"none"} onChangeText={(newVal)=>setConnectionParams((prev) => ({ ...prev, path: newVal }))} />
+          <TextInput placeholder={"enter Path"} value={path} autoCapitalize={"none"} onChangeText={(newVal) => setConnectionParams((prev) => ({ ...prev, path: newVal }))} />
         </View>
         <View className="flex flex-row" style={{ marginTop: "-1%" }}>
           <View className="flex flex-row gap-2 items-center justify-center align-middle">
             <Text className="">Use SSL :</Text>
             <View className="overflow-clip bg-gray-100">
-              <CheckBox containerStyle={{ backgroundColor: "rgb(243 244 246 / var(--tw-bg-opacity))" }} size={20} checkedColor="#42b883" checked={useSSL} onPress={()=>setConnectionParams((prev) => ({ ...prev, useSSL: !prev.useSSL }))} />
+              <CheckBox containerStyle={{ backgroundColor: "rgb(243 244 246 / var(--tw-bg-opacity))" }} size={20} checkedColor="#42b883" checked={useSSL} onPress={() => setConnectionParams((prev) => ({ ...prev, useSSL: !prev.useSSL }))} />
             </View>
           </View>
           <View className="flex flex-row gap-2 items-center justify-center align-middle">
             <Text className="p-0">Authentication :</Text>
             <View className="overflow-clip bg-gray-100">
-              <CheckBox containerStyle={{ backgroundColor: "rgb(243 244 246 / var(--tw-bg-opacity))" }} size={20} checkedColor="#42b883" checked={isAuth} onPress={()=>setConnectionParams((prev) => ({ ...prev, isAuth: !prev.isAuth }))} />
+              <CheckBox containerStyle={{ backgroundColor: "rgb(243 244 246 / var(--tw-bg-opacity))" }} size={20} checkedColor="#42b883" checked={isAuth} onPress={() => setConnectionParams((prev) => ({ ...prev, isAuth: !prev.isAuth }))} />
             </View>
           </View>
         </View>
@@ -223,11 +220,11 @@ export default function Connection() {
           <View>
             <View className="flex flex-row gap-2 items-center justify-center">
               <Text>UserName :</Text>
-              <TextInput className="pr-2" placeholder={"enter user name"} value={userName} autoCapitalize={"none"} onChangeText={(newVal)=>setConnectionParams((prev) => ({ ...prev, userName: newVal }))} />
+              <TextInput className="pr-2" placeholder={"enter user name"} value={userName} autoCapitalize={"none"} onChangeText={(newVal) => setConnectionParams((prev) => ({ ...prev, userName: newVal }))} />
             </View>
             <View className="flex flex-row gap-2 items-center justify-center">
               <Text className="">Password :</Text>
-              <TextInput text="password" placeholder={"enter password"} value={password} autoCapitalize={"none"} onChangeText={(newVal)=>setConnectionParams((prev) => ({ ...prev, password: newVal }))} />
+              <TextInput text="password" placeholder={"enter password"} value={password} autoCapitalize={"none"} onChangeText={(newVal) => setConnectionParams((prev) => ({ ...prev, password: newVal }))} />
             </View>
           </View>
         )}

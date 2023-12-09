@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   isConnected: false,
-  isCloudConnection:false
+  isCloudConnection: false,
 };
 export const mqttSlice = createSlice({
   name: "mqtt",
@@ -19,6 +19,6 @@ export const mqttSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { setIsConnected,setIsCloudConnection} = mqttSlice.actions;
+export const { setIsConnected, setIsCloudConnection } = mqttSlice.actions;
 
 export default mqttSlice.reducer;

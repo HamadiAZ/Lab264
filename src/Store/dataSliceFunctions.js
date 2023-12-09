@@ -1,4 +1,4 @@
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 const separator = "/";
 
@@ -17,26 +17,22 @@ export function getListDeviceFromState(cumulativePath) {
 }
 
 export function updateCumulativePath(obj, path = "") {
-  let newSeparator = obj.separator == undefined ? separator : obj.separator;
+  let newSeparator = obj.separator === false ? "" : separator;
   let newCumulativePath = path + newSeparator + obj.path; // trying not to update the state so often
 
-  if (obj.cumulativePath != newCumulativePath)
-    obj.cumulativePath = newCumulativePath; // trying not to update the state so often
+  if (obj.cumulativePath != newCumulativePath) obj.cumulativePath = newCumulativePath; // trying not to update the state so often
   if (obj.type == "container") {
     obj.Data.forEach((element) => {
-       updateCumulativePath(element, newCumulativePath);
+      updateCumulativePath(element, newCumulativePath);
     });
   }
   return obj;
 }
 
-export function getAllDevices(data) {
-  return _getAllDevices(data);
-}
-function _getAllDevices(obj, devices = []) {
+export function getAllDevices(obj, devices = []) {
   if (obj.type == "container") {
     obj.Data.forEach((element) => {
-      _getAllDevices(element, devices);
+      getAllDevices(element, devices);
     });
   } else {
     devices.push(obj);
@@ -44,10 +40,10 @@ function _getAllDevices(obj, devices = []) {
   return devices;
 }
 
-function _getCategories(obj, categories = {}) {
+export function getCategories(obj = test, categories = {}) {
   if (obj.type == "container") {
     obj.Data.forEach((element) => {
-      categories = _getCategories(element, categories);
+      categories = getCategories(element, categories);
     });
   } else {
     if (categories[obj.category] == undefined) {
@@ -59,17 +55,10 @@ function _getCategories(obj, categories = {}) {
   return categories;
 }
 
-export function getCategories(obj = test) {
-  return _getCategories(obj);
-}
-
-export function getTypes(obj) {
-  return _getTypes(obj);
-}
-function _getTypes(obj, Types = {}) {
+export function getTypes(obj, Types = {}) {
   if (obj.type == "container") {
     obj.Data.forEach((element) => {
-      Types = _getTypes(element, Types);
+      Types = getTypes(element, Types);
     });
   } else {
     if (Types[obj.type] == undefined) {
@@ -96,17 +85,13 @@ function _getElementByPath(cumulativePath = "", obj) {
     }
     return undefined;
   }
-
   // container
   searchedPart = cumulativePath;
 
-  //left part
-
-  if (cumulativePath.startsWith(separator))
-    searchedPart = cumulativePath.substring(separator.length);
-
+  //remove left part
+  if (cumulativePath.startsWith(separator)) searchedPart = cumulativePath.substring(separator.length);
   let rightPartRemoved = searchedPart;
- 
+
   //remove right Part
   if (obj.Data.length > 0) {
     rightPartRemoved = searchedPart.split(separator)[0];
@@ -114,28 +99,22 @@ function _getElementByPath(cumulativePath = "", obj) {
 
   if (rightPartRemoved != obj.path) return undefined;
 
-  searchedPart = searchedPart.substring(
-    rightPartRemoved.length + separator.length
-  );
+  searchedPart = searchedPart.substring(rightPartRemoved.length + separator.length);
 
   let result;
- /*  console.log("searchedPart ")
-  console.log(searchedPart) */
+  //console.log("searchedPart ") ;console.log(searchedPart) ;
   obj.Data.forEach((newObj) => {
-
     const x = _getElementByPath(searchedPart, newObj);
     if (x !== undefined) {
       result = x;
       return;
     }
   });
-
   return result;
 }
 
-
 function getListElementByPath(cumulativePath = "", obj) {
-  let foundList=[];
+  let foundList = [];
   obj.Data.forEach((element) => {
     let result = _getListElementByPath(cumulativePath, element);
     if (result != undefined) foundList.push(...result);
@@ -155,11 +134,10 @@ function _getListElementByPath(cumulativePath = "", obj) {
 
   //left part
 
-  if (cumulativePath.startsWith(separator))
-    searchedPart = cumulativePath.substring(separator.length);
+  if (cumulativePath.startsWith(separator)) searchedPart = cumulativePath.substring(separator.length);
 
   let rightPartRemoved = searchedPart;
- 
+
   //remove right Part
   if (obj.Data.length > 0) {
     rightPartRemoved = searchedPart.split(separator)[0];
@@ -167,11 +145,9 @@ function _getListElementByPath(cumulativePath = "", obj) {
 
   if (rightPartRemoved != obj.path) return undefined;
 
-  searchedPart = searchedPart.substring(
-    rightPartRemoved.length + separator.length
-  );
+  searchedPart = searchedPart.substring(rightPartRemoved.length + separator.length);
 
-  let result=[];
+  let result = [];
   /* console.log("searchedPart ")
   console.log(searchedPart) */
   obj.Data.forEach((newObj) => {

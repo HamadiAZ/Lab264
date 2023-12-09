@@ -1,6 +1,3 @@
-
-
-
 const separator = "/";
 
 //// LAB264 STATIC
@@ -40,7 +37,8 @@ let Lab07Data = [
       minValue: 0,
       maxValue: 10,
     },
-  },{
+  },
+  {
     type: "Button",
     name: "Door Control",
     path: "Door",
@@ -52,13 +50,12 @@ let Lab07Data = [
       offMessage: "DoorClose",
     },
   },
-]
+];
 
 let Lab01Data = [
   {
     type: "Button",
     name: "Button 1",
-
     path: "Button01",
     cumulativePath: "",
     category: "ButtonX",
@@ -71,7 +68,6 @@ let Lab01Data = [
   {
     type: "Button",
     name: "Button 2",
-
     path: "Button02",
     cumulativePath: "",
     category: "ButtonY",
@@ -84,7 +80,6 @@ let Lab01Data = [
   {
     type: "Slider",
     name: "Slider 1",
-
     path: "Slider01",
     cumulativePath: "",
     category: "ButtonY",
@@ -97,7 +92,6 @@ let Lab01Data = [
   {
     type: "Custom",
     name: "custom with params",
-
     path: "Custom01",
     cumulativePath: "",
     category: "ButtonY",
@@ -109,7 +103,6 @@ let Lab01Data = [
   {
     type: "Custom",
     name: "custom 2",
-
     path: "Custom02",
     cumulativePath: "",
     category: "ButtonY",
@@ -119,7 +112,6 @@ let Lab01Data = [
   {
     type: "Custom",
     name: "custom 3",
-
     path: "Custom03",
     cumulativePath: "",
     category: "ButtonY",
@@ -129,7 +121,6 @@ let Lab01Data = [
   {
     type: "Custom",
     name: "custom 2",
-
     path: "Custom02",
     cumulativePath: "",
     category: "ButtonY",
@@ -141,7 +132,6 @@ let Lab264Data = [
   {
     type: "container",
     name: "Lab01",
-
     path: "Lab01",
     cumulativePath: "",
     Data: Lab01Data,
@@ -149,7 +139,6 @@ let Lab264Data = [
   {
     type: "container",
     name: "Lab02",
-
     path: "Lab02",
     cumulativePath: "",
     Data: [],
@@ -157,7 +146,6 @@ let Lab264Data = [
   {
     type: "container",
     name: "Lab07",
-
     path: "Lab07",
     cumulativePath: "",
     Data: Lab07Data,
@@ -167,7 +155,6 @@ let EnigData = [
   {
     type: "container",
     name: "Lab264",
-
     path: "Lab264",
     cumulativePath: "",
     Data: Lab264Data,
@@ -175,13 +162,11 @@ let EnigData = [
   {
     type: "container",
     name: "Lab256",
-
     path: "Lab256",
     cumulativePath: "",
     Data: [],
   },
 ];
-
 
 let Lab264StaticData = [
   {
@@ -190,7 +175,7 @@ let Lab264StaticData = [
     path: "Lab02",
     cumulativePath: "",
     Data: [],
-    redirect:true,
+    redirect: true,
   },
   {
     type: "container",
@@ -198,14 +183,14 @@ let Lab264StaticData = [
     path: "Lab07",
     cumulativePath: "",
     Data: [],
-    redirect:true,
+    redirect: true,
   },
 ];
 export let test = {
   type: "container",
   path: "",
   cumulativePath: "",
-  separator:"",
+  separator: false,
   Data: [
     {
       type: "container",
@@ -218,11 +203,6 @@ export let test = {
       name: "Lab264 : static labs",
       path: "ENIG/Lab264",
       Data: Lab264StaticData,
-      redirect:true,
     },
   ],
 };
-
-
-
-

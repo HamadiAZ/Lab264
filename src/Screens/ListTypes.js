@@ -1,17 +1,16 @@
-import React, { useEffect } from "react";
-import Card from "../Components/Card";
-import { View, Text, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import React, { useEffect } from "react";
+import { View } from "react-native";
+import Card from "../Components/Card";
 
-import { useSelector, useDispatch } from 'react-redux'
-import { getTypes } from "../Store/dataSliceFunctions";
+import { useSelector } from "react-redux";
 import ConnectionStatusBar from "../Components/ConnectionStatusBar";
-
+import { getTypes } from "../Store/dataSliceFunctions";
 
 function ListTypes({ route }) {
   const navigation = useNavigation();
   const data = useSelector((state) => state.data);
-  const types=getTypes(data);
+  const types = getTypes(data);
   var list = Object.keys(types);
   useEffect(() => {
     navigation.setOptions({
@@ -19,21 +18,11 @@ function ListTypes({ route }) {
     });
   }, []);
 
-  const isMqttConnected = useSelector((state) => state.mqtt.isConnected);
   return (
     <View className="flex-1 bg-white">
       <ConnectionStatusBar />
       {list.map((typeName, index) => {
-        return (
-          <Card
-            key={index}
-            name={typeName}
-            Data={types[typeName]}
-            separator=""
-            showSetting={false}
-            showPath={false}
-          />
-        );
+        return <Card key={index} name={typeName} Data={types[typeName]} separator="" showSetting={false} showPath={false} />;
       })}
     </View>
   );
