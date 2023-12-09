@@ -105,8 +105,8 @@ export default function Connection() {
     client.connect({
       onSuccess: onSuccess,
       useSSL: useSSL,
-      userName: isAuth ? userName : undefined,
-      password: isAuth ? password : undefined,
+      userName: isAuth ? userName : "",
+      password: isAuth ? password : "",
       timeout: 3,
       uris: ["ws://" + host + ":" + Number(port) + path],
       onFailure: onConnectionLost,
