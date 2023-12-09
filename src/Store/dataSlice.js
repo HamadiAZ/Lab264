@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { test } from "../data";
-import { setStateOfDevice, updateCumulativePath } from "./dataSliceFunctions";
-const initialState = test;
+import { setStateOfDevice, updateCumulativePath ,initializeAppDataFn} from "./dataSliceFunctions";
+const initialState = {};
 
 export const DataSlice = createSlice({
   name: "data",
@@ -12,6 +12,14 @@ export const DataSlice = createSlice({
       setStateOfDevice(state, newState);
     },
 
+    initializeAppData:(state)=>{
+      initializeAppDataFn(state);
+    },
+
+    setData:(state,action)=>{
+      Object.assign(state, action.payload);
+    },
+
     updateCumulativePaths: (state) => {
       updateCumulativePath(state);
     },
@@ -19,6 +27,6 @@ export const DataSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { updateDeviceState, updateCumulativePaths } = DataSlice.actions;
+export const { updateDeviceState, updateCumulativePaths,initializeAppData ,setData} = DataSlice.actions;
 
 export default DataSlice.reducer;

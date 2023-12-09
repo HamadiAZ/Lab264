@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "912828525384",
+    "project_id": "enig-lab264",
+    "storage_bucket": "enig-lab264.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:912828525384:android:de402fb098682d4ba3217d",
+        "android_client_info": {
+          "package_name": "com.app.Lab264IOT"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCj9wmKDdFi0elhhnw3ILv2Is8Vi-a1YZg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

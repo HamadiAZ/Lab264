@@ -6,26 +6,28 @@ import ListCards from "./Screens/ListCards"; // import your new screen
 import ListCategories from "./Screens/ListCategories";
 import ListTypes from "./Screens/ListTypes";
 import { useDispatch } from "react-redux";
-import { updateCumulativePaths } from "./Store/dataSlice";
+import { initializeAppData, setData, updateCumulativePaths } from "./Store/dataSlice";
 import { useEffect } from "react";
 import Lab07 from "./Screens/lab264/Lab07/Lab07";
 import Lab02 from "./Screens/lab264/Lab02";
+import CloudSync from "./Screens/CloudSync";
+import { async } from "@firebase/util";
+import { readObject } from "./Utils/asyncStorage";
+import { getLocalStorageData } from "./Store/dataSliceFunctions";
+import DataProvider from "./Utils/DataProvider";
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
 
 const DrawerNavigator = () => {
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(updateCumulativePaths());
-  }, []);
-
+  DataProvider();
   return (
     <Drawer.Navigator initialRouteName="Home">
       <Drawer.Screen name="Home" component={ListCards} />
       <Drawer.Screen name="Connection manager" component={Connection} />
       <Drawer.Screen name="Categories" component={ListCategories} />
       <Drawer.Screen name="Types" component={ListTypes} />
+      <Drawer.Screen name="Cloud Syncing" component={CloudSync} />
     </Drawer.Navigator>
   );
 };

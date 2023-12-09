@@ -186,7 +186,9 @@ let Lab264StaticData = [
     redirect: true,
   },
 ];
-export let test = {
+
+export let test={};
+export let test2 = {
   type: "container",
   path: "",
   cumulativePath: "",

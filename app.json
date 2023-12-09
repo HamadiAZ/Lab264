@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Lab264 IOT",
-    "slug": "Lab264 IOT",
+    "name": "Lab264IOT",
+    "slug": "Lab264IOT",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
