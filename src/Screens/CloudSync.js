@@ -12,8 +12,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { setData, updateCumulativePaths } from "../Store/dataSlice";
 import { readObject, storeObject } from "../Utils/asyncStorage";
 
-import * as FileSystem from "expo-file-system";
 import * as DocumentPicker from "expo-document-picker";
+import * as FileSystem from "expo-file-system";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCaENsDDIVdz7erHN05N6VpTdHkdUlntCU",
@@ -147,7 +147,7 @@ function CloudSync() {
   const exportToJson = async () => {
     try {
       setLoading(true);
-      const jsonString = JSON.stringify({a:"t"});
+      const jsonString = JSON.stringify({ a: "t" });
       // Let the user pick a directory to save the file
       const directoryUri = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
       if (directoryUri.granted) {
@@ -188,11 +188,9 @@ function CloudSync() {
           alert("JSON file imported successfully");
         } else {
           console.error("The JSON object does not match the required form:", validation.errorMessage);
-          alert("JSON file is not valid : "+validation.errorMessage);
+          alert("JSON file is not valid : " + validation.errorMessage);
         }
         console.log("JSON file imported successfully:", importedData);
-
-
       } else {
         console.log("Document picker was cancelled or no file was selected");
         alert("Importing error: operation cancelled or no file was selected");
@@ -254,36 +252,35 @@ function CloudSync() {
 
 export default CloudSync;
 
-
 const validateJsonStructure = (jsonObject) => {
   let isValid = true;
-  let errorMessage = '';
+  let errorMessage = "";
 
-  if (!jsonObject.hasOwnProperty('type')) {
+  if (!jsonObject.hasOwnProperty("type")) {
     errorMessage += 'Property "type" is missing.\n';
     isValid = false;
-  } else if (jsonObject.type !== 'container') {
+  } else if (jsonObject.type !== "container") {
     errorMessage += 'Property "type" must be "container".\n';
     isValid = false;
   }
 
-  if (!jsonObject.hasOwnProperty('path')) {
+  if (!jsonObject.hasOwnProperty("path")) {
     errorMessage += 'Property "path" is missing.\n';
     isValid = false;
-  } else if (typeof jsonObject.path !== 'string') {
+  } else if (typeof jsonObject.path !== "string") {
     errorMessage += 'Property "path" must be a string.\n';
     isValid = false;
   }
 
-  if (!jsonObject.hasOwnProperty('cumulativePath')) {
+  if (!jsonObject.hasOwnProperty("cumulativePath")) {
     errorMessage += 'Property "cumulativePath" is missing.\n';
     isValid = false;
-  } else if (typeof jsonObject.cumulativePath !== 'string') {
+  } else if (typeof jsonObject.cumulativePath !== "string") {
     errorMessage += 'Property "cumulativePath" must be a string.\n';
     isValid = false;
   }
 
-  if (!jsonObject.hasOwnProperty('separator')) {
+  if (!jsonObject.hasOwnProperty("separator")) {
     errorMessage += 'Property "separator" is missing.\n';
     isValid = false;
   } else if (jsonObject.separator !== false) {
@@ -291,7 +288,7 @@ const validateJsonStructure = (jsonObject) => {
     isValid = false;
   }
 
-  if (!jsonObject.hasOwnProperty('Data')) {
+  if (!jsonObject.hasOwnProperty("Data")) {
     errorMessage += 'Property "Data" is missing.\n';
     isValid = false;
   } else if (!Array.isArray(jsonObject.Data) || jsonObject.Data.length === 0) {

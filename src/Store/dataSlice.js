@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { test } from "../data";
 import { setStateOfDevice, updateCumulativePath ,initializeAppDataFn} from "./dataSliceFunctions";
 const initialState = {};
 
