@@ -7,13 +7,13 @@ import { Ionicons, Material, CommunityIcons } from "@expo/vector-icons";
 import { useSelector, useDispatch } from "react-redux";
 import { updateCumulativePaths, updateDeviceState } from "../Store/dataSlice";
 import { getAllDevices } from "../Store/dataSliceFunctions";
-import { setIsConnected } from "../Store/mqttSlice";
+import { setIsCloudConnection, setIsConnected } from "../Store/mqttSlice";
 
 import init from "react_native_mqtt";
 
 import MessagesHandler from "../Components/MessagesHandler";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { readObject, storeObject } from "../Utils/asyncStorage";
+import { readObject, removeItem, storeObject } from "../Utils/asyncStorage";
 import { CheckBox } from "@rneui/themed";
 
 init({
@@ -33,8 +33,17 @@ export function publishMessage(publishPayload, publishTopic) {
   message._setRetained(true);
   client.send(message);
 }
+const initialLocalData={
+  host: "192.168.0.219",
+  port: "9001",
+  id: "Client" + parseInt(Math.random() * 100000),
+  path: "",
+  userName: "",
+  password: "",
+  useSSL: false,
+  isAuth: false,
+};
 
-console.log("rerendered");
 export default function Connection() {
   const [status, setStatus] = useState("");
 
@@ -44,21 +53,15 @@ export default function Connection() {
   const [isSubscribed, setSubscribed] = useState(false);
 
   const isMqttConnected = useSelector((state) => state.mqtt.isConnected);
+  const isCloudConnection = useSelector((state) => state.mqtt.isCloudConnection);
+
   const data = useSelector((state) => state.data);
   const allDevices = getAllDevices(data);
 
   const dispatch = useDispatch();
 
-  const [host, setHost] = useState("192.168.0.219");
-  const [port, setPort] = useState("9001");
-  const [id, setId] = useState("Client" + parseInt(Math.random() * 100000));
-  const [path, setPath] = useState("");
-  const [userName, setUserName] = useState("");
-  const [password, setPassword] = useState("");
-  const [useSSL, setUseSSL] = useState(false);
-  const [isCloudConnection, setIsCloudConnection] = useState(false);
-
-  const [isAuth, setIsAuth] = useState(false);
+  const [connectionParams, setConnectionParams] = useState(initialLocalData);
+  let { host, port, userName, password, path, useSSL, isAuth ,id} = connectionParams;
 
   const onSuccess = () => {
     console.info("Mqtt Connected");
@@ -98,7 +101,7 @@ export default function Connection() {
     setStatus("isFetching");
     client = new Paho.MQTT.Client(host, Number(port), publishTopic, id);
 
-    connectionObject = { host, port, userName, password, path, useSSLAsync: useSSL, isAuth };
+    connectionObject = { host, port, userName, password, path, useSSL, isAuth ,id};
     if (isCloudConnection) storeObject("cloudConnectionCredential", connectionObject);
     else storeObject("localConnectionCredential", connectionObject);
 
@@ -108,7 +111,7 @@ export default function Connection() {
       userName: isAuth ? userName : "",
       password: isAuth ? password : "",
       timeout: 3,
-      uris: ["ws://" + host + ":" + Number(port) + path],
+      uris: ["ws://" + host + ":" + Number(port) + (path.startsWith("/") ? path : "/"+path)],
       onFailure: onConnectionLost,
     });
   }
@@ -135,61 +138,42 @@ export default function Connection() {
   const handleTextChange = (text) => {
     // Replace any non-numeric characters with an empty string
     const numericText = text.replace(/[^0-9]/g, "");
-    setPort(numericText);
+    setConnectionParams((prev) => ({ ...prev, port: numericText }));
   };
   function handleCloudSwitch() {
     if (isMqttConnected) disconnect();
-    setIsCloudConnection((prev) => !prev);
+    dispatch(setIsCloudConnection(!isCloudConnection));
   }
 
   useEffect(() => {
     if (isCloudConnection)
       readObject("cloudConnectionCredential").then((connectionObject) => {
-        if (connectionObject != undefined) {
-          const { host, port, userName, password, path, useSSLAsync, isAuth } = connectionObject;
-          setHost("ef4c58ce97fa40909e09b783589dd584.s1.eu.hivemq.cloud");
-          setPort(port);
-          setUserName(userName);
-          setPassword(password);
-          setPath(path);
-          setUseSSL(useSSLAsync);
-          setIsAuth(isAuth);
-        } else {
+        if (connectionObject != undefined) setConnectionParams(connectionObject);
+        else {
           console.log("got empty cloudConnectionCredential in loading");
-          setHost("ef4c58ce97fa40909e09b783589dd584.s1.eu.hivemq.cloud");
-          setPort("8884");
-          setUserName("lab264");
-          setPassword("MrRidhaHamdi264");
-          setPath("/mqtt");
-          setUseSSL(true);
-          setIsAuth(true);
+          setConnectionParams({
+            host: "test.mosquitto.org",
+            port: "8081",
+            id: "Client" + parseInt(Math.random() * 100000),
+            path: "/mqtt",
+            userName: "",
+            password: "",
+            useSSL: true,
+            isAuth: false,
+          });
         }
       });
 
     if (!isCloudConnection)
       readObject("localConnectionCredential").then((connectionObject) => {
-        if (connectionObject != undefined) {
-          const { host, port, userName, password, path, useSSLAsync, isAuth } = connectionObject;
-          setHost(host);
-          setPort(port);
-          setUserName(userName);
-          setPassword(password);
-          setPath(path);
-          setUseSSL(useSSLAsync);
-          setIsAuth(isAuth);
-        } else {
-          setHost("192.168.0.219");
-          setPort("9001");
-          setUserName("");
-          setPassword("");
-          setPath("");
-          setUseSSL(false);
-          setIsAuth(false);
+        if (connectionObject != undefined) setConnectionParams(connectionObject);
+        else {
+          setConnectionParams(initialLocalData);
           console.log("got empty localConnectionCredential in loading");
         }
       });
   }, [isCloudConnection]);
-  console.log(useSSL);
+  console.log("rerendered");
   return (
     <View className="flex-1">
       <MessagesHandler client={client} />
@@ -206,7 +190,7 @@ export default function Connection() {
       <View className="justify-center items-center max-h-60">
         <View className="flex flex-row gap-2 items-center justify-center">
           <Text className="pl-9">Host :</Text>
-          <TextInput value={host} autoCapitalize={"none"} style={{ maxWidth: "70%" }} onChangeText={setHost} className="w-fit overflow-auto" />
+          <TextInput value={host} autoCapitalize={"none"} style={{ maxWidth: "70%" }} onChangeText={(newVal)=>setConnectionParams((prev) => ({ ...prev, host: newVal }))} className="w-fit overflow-auto" />
         </View>
         <View className="flex flex-row gap-2 items-center justify-center">
           <Text>Port :</Text>
@@ -215,36 +199,38 @@ export default function Connection() {
         </View>
         <View className="flex flex-row gap-2 items-center justify-center">
           <Text>Client Id :</Text>
-          <TextInput className="pr-2" value={id} autoCapitalize={"none"} onChangeText={setId} />
+          <TextInput className="pr-2" value={id} autoCapitalize={"none"} onChangeText={(newVal)=>setConnectionParams((prev) => ({ ...prev, id: newVal }))} />
         </View>
         <View className="flex flex-row gap-2 items-center justify-center">
           <Text className="">Path :</Text>
-          <TextInput placeholder={"enter Path"} value={path} autoCapitalize={"none"} onChangeText={setPath} />
+          <TextInput placeholder={"enter Path"} value={path} autoCapitalize={"none"} onChangeText={(newVal)=>setConnectionParams((prev) => ({ ...prev, path: newVal }))} />
         </View>
         <View className="flex flex-row" style={{ marginTop: "-1%" }}>
           <View className="flex flex-row gap-2 items-center justify-center align-middle">
             <Text className="">Use SSL :</Text>
             <View className="overflow-clip bg-gray-100">
-              <CheckBox containerStyle={{ backgroundColor: "rgb(243 244 246 / var(--tw-bg-opacity))" }} size={20} checkedColor="#42b883" checked={useSSL} onPress={() => setUseSSL((old) => !old)} />
+              <CheckBox containerStyle={{ backgroundColor: "rgb(243 244 246 / var(--tw-bg-opacity))" }} size={20} checkedColor="#42b883" checked={useSSL} onPress={()=>setConnectionParams((prev) => ({ ...prev, useSSL: !prev.useSSL }))} />
             </View>
           </View>
           <View className="flex flex-row gap-2 items-center justify-center align-middle">
             <Text className="p-0">Authentication :</Text>
             <View className="overflow-clip bg-gray-100">
-              <CheckBox containerStyle={{ backgroundColor: "rgb(243 244 246 / var(--tw-bg-opacity))" }} size={20} checkedColor="#42b883" checked={isAuth} onPress={() => setIsAuth((old) => !old)} />
+              <CheckBox containerStyle={{ backgroundColor: "rgb(243 244 246 / var(--tw-bg-opacity))" }} size={20} checkedColor="#42b883" checked={isAuth} onPress={()=>setConnectionParams((prev) => ({ ...prev, isAuth: !prev.isAuth }))} />
             </View>
           </View>
         </View>
-        {isAuth && <View>
-          <View className="flex flex-row gap-2 items-center justify-center">
-            <Text>UserName :</Text>
-            <TextInput className="pr-2"   placeholder={"enter user name"} value={userName} autoCapitalize={"none"} onChangeText={setUserName} />
+        {isAuth && (
+          <View>
+            <View className="flex flex-row gap-2 items-center justify-center">
+              <Text>UserName :</Text>
+              <TextInput className="pr-2" placeholder={"enter user name"} value={userName} autoCapitalize={"none"} onChangeText={(newVal)=>setConnectionParams((prev) => ({ ...prev, userName: newVal }))} />
+            </View>
+            <View className="flex flex-row gap-2 items-center justify-center">
+              <Text className="">Password :</Text>
+              <TextInput text="password" placeholder={"enter password"} value={password} autoCapitalize={"none"} onChangeText={(newVal)=>setConnectionParams((prev) => ({ ...prev, password: newVal }))} />
+            </View>
           </View>
-          <View className="flex flex-row gap-2 items-center justify-center">
-            <Text className="">Password :</Text>
-            <TextInput text="password" placeholder={"enter password"} value={password} autoCapitalize={"none"} onChangeText={setPassword} />
-          </View>
-        </View>}
+        )}
       </View>
       <Button type="solid" title={status == "isFetching" ? "connecting" : !isMqttConnected ? "connect" : "disconnect"} onPress={connectDisconnectHandler} color={isMqttConnected ? "red" : "#42b883"} disabled={status == "isFetching"} />
       <View style={styles.mainContainer}>

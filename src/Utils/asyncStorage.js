@@ -44,3 +44,12 @@ export async function readObject(key, setFunction = undefined) {
     return undefined;
   }
 }
+
+export async function removeItem(key) {
+  try {
+     await AsyncStorage.removeItem(key);
+  } catch (e) {
+    console.log("readObject from async storage : Error for key : " + key + " || " + e);
+    return undefined;
+  }
+}
