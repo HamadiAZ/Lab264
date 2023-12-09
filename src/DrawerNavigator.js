@@ -1,19 +1,13 @@
-import { createStackNavigator } from "@react-navigation/stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
+import { createStackNavigator } from "@react-navigation/stack";
 
+import CloudSync from "./Screens/CloudSync";
 import Connection from "./Screens/Connection";
 import ListCards from "./Screens/ListCards"; // import your new screen
 import ListCategories from "./Screens/ListCategories";
 import ListTypes from "./Screens/ListTypes";
-import { useDispatch } from "react-redux";
-import { initializeAppData, setData, updateCumulativePaths } from "./Store/dataSlice";
-import { useEffect } from "react";
-import Lab07 from "./Screens/lab264/Lab07/Lab07";
 import Lab02 from "./Screens/lab264/Lab02";
-import CloudSync from "./Screens/CloudSync";
-import { async } from "@firebase/util";
-import { readObject } from "./Utils/asyncStorage";
-import { getLocalStorageData } from "./Store/dataSliceFunctions";
+import Lab07 from "./Screens/lab264/Lab07/Lab07";
 import DataProvider from "./Utils/DataProvider";
 
 const Drawer = createDrawerNavigator();

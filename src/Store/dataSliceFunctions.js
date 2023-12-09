@@ -1,9 +1,6 @@
-import { useDispatch, useSelector } from "react-redux";
-import { readObject } from "../Utils/asyncStorage";
-import { setData, updateCumulativePaths } from "./dataSlice";
+import { useSelector } from "react-redux";
 
 const separator = "/";
-
 
 export function setStateOfDevice(state, newState) {
   let oldElementState = getElementByPath(newState.cumulativePath, state);

@@ -1,7 +1,7 @@
-import { View, Text } from "react-native";
 import React from "react";
-import { setData, updateCumulativePaths } from "../Store/dataSlice";
+import { View } from "react-native";
 import { useDispatch } from "react-redux";
+import { setData, updateCumulativePaths } from "../Store/dataSlice";
 import { readObject } from "./asyncStorage";
 
 async function DataProvider() {
