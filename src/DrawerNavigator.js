@@ -1,7 +1,7 @@
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { createStackNavigator } from "@react-navigation/stack";
 
-import CloudSync from "./Screens/CloudSync";
+import ImportAndExportData from "./Screens/ImportAndExportData";
 import Connection from "./Screens/Connection";
 import ListCards from "./Screens/ListCards"; // import your new screen
 import ListCategories from "./Screens/ListCategories";
@@ -21,7 +21,7 @@ const DrawerNavigator = () => {
       <Drawer.Screen name="Connection manager" component={Connection} />
       <Drawer.Screen name="Categories" component={ListCategories} />
       <Drawer.Screen name="Types" component={ListTypes} />
-      <Drawer.Screen name="Cloud Syncing" component={CloudSync} />
+      <Drawer.Screen name="Import/Export Data" component={ImportAndExportData} />
     </Drawer.Navigator>
   );
 };
